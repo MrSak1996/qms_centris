@@ -6,8 +6,7 @@
         <div class="card-body">
           <p class="card-title">Annual Procurement Plan for F.Y 2023</p>
           <div class="box-tools">
-            <button @click="toCreatePR()" type="button" class="btn btn-primary btn-icon-text">
-              <i class="ti-plus btn-icon-prepend"></i>
+            <button @click="toCreatePR()" type="button" class="btn btn-outline-primary btn-fw btn-icon-text">
               Create PR
             </button>
           </div>

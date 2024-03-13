@@ -15,7 +15,7 @@
                 <!-- <MultiSelectInput label="Purchase Request Number" :op?tions="pr_no" v-model="pr_no" /> -->
                 <div class="form-group">
                   <label>Purchase Request Number</label>
-                  <vue-multiselect v-model="selected" :options="options" label="label" :multiple="true"></vue-multiselect>
+                  <multiselect v-model="selected" :options="options" label="label" :multiple="true"></multiselect>
                 </div>
                 <TextInput label="RFQ Number" v-model="rfq_no" :value="rfq_no" :readonly="true" />
                 <SelectInput label="Mode of Procurement" v-model="selectedMode">
@@ -48,7 +48,7 @@
 import dilg_logo from "../../../../../assets/logo.png";
 import TextInput from "../../../micro/TextInput.vue";
 import SelectInput from "../../../micro/SelectInput.vue";
-import MultiSelectInput from "../../../micro/MultiSelectInput.vue";
+import Multiselect from 'vue-multiselect'
 import TextAreaInput from "../../../micro/TextAreaInput.vue";
 import { toast } from "vue3-toastify";
 // import { toGss } from "../../../../globalMethods.js";
@@ -63,7 +63,7 @@ export default {
     TextInput,
     TextAreaInput,
     SelectInput,
-    MultiSelectInput
+    Multiselect
 
   },
   data() {
@@ -80,9 +80,6 @@ export default {
       particulars: null
 
     }
-  },
-  props: {
-    visible: Boolean,
   },
 
   mounted() {

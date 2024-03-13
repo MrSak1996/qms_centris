@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 const SUBMITTED_TO_GSS = 4;
+const RECEIVED_BY_GSS = 5;
+const WITH_RFQ = 6;
+const AWARDED = 7;
+const WITH_PO = 8;
 class RFQController extends Controller
 {
     public function generateRFQNo($cur_year = 2024)
@@ -24,6 +28,15 @@ class RFQController extends Controller
         return response()->json(
             PurchaseRequestModel::select(PurchaseRequestModel::raw('id,pr_no'))
                 ->where('stat', SUBMITTED_TO_GSS)
+                ->get()
+        );
+    }
+    public function fetch_rfq()
+    {
+        return response()->json(
+            RFQModel::select(RFQModel::raw('tbl_rfq.id,tbl_rfq.rfq_no'))
+                ->leftJoin('pr', 'pr.id', '=', 'tbl_rfq.pr_id')
+                ->where('pr.stat',WITH_RFQ)
                 ->get()
         );
     }

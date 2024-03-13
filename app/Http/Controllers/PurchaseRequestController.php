@@ -267,7 +267,7 @@ class PurchaseRequestController extends Controller
             ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
             ->leftJoin('tbl_status as status', 'status.id', '=', 'pr.stat')
             ->leftJoin('tbl_rfq as rfq','rfq.pr_id','=','pr.id')
-            ->where('pr.stat', 4)
+            ->whereIn('pr.stat', [4, 6]) // New where condition using IN operator
             ->orderBy('pr.id', 'desc')
             ->groupBy('pr.id');
 
@@ -448,5 +448,24 @@ class PurchaseRequestController extends Controller
                 'stat' => $request->input('status'),
             ]);
         return response()->json(['message' => 'Purchase Request updated successfully']);
+    }
+
+    public function countPurchaseRequestStatistics($cur_year)
+    {
+            return response()->json(
+                PurchaseRequestModel::select(
+                    PurchaseRequestModel::raw('COUNT(*) as total_pr'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 1 THEN 1 END) as draft'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 2 THEN 1 END) as submitted_to_budget'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 3 THEN 1 END) as received_by_budget'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 4 THEN 1 END) as submitted_to_gss'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 5 THEN 1 END) as received_by_gss'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 6 THEN 1 END) as with_rfq'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 7 THEN 1 END) as awarded'),
+                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 8 THEN 1 END) as with_purchase_order'),
+                )
+                    ->whereYear('date_added',2024)
+                    ->get()
+            );
     }
 }

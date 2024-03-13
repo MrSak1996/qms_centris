@@ -7,7 +7,13 @@
 .input-icons i {
     position: absolute;
 }
+
+.btn-custom {
+    background-color: #059886;
+    color: #fff;
+}
 </style>
+
 <template>
     <div class="container-scroller">
         <Navbar></Navbar>
@@ -17,115 +23,14 @@
                 <div class="content-wrapper">
                     <BreadCrumbs />
                     <div class="row">
-                        <div class="col-md-12 grid-margin mb-4 stretch-card">
+                        <StatBox />
 
-                            <div class="col-md-3 col-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">APP Item Encoded</p>
-                                        <p class="fs-30 mb-2">197</p>
-                                        <p>10.00% (as of today)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">APP Item with same Stock No</p>
-                                        <p class="fs-30 mb-2">61344</p>
-                                        <p>22.00% (30 days)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">Newly Encoded App Item</p>
-                                        <p class="fs-30 mb-2">34040</p>
-                                        <p>2.00% (30 days)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 card-dark-bluecol-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">App Item without Office</p>
-                                        <p class="fs-30 mb-2">47033</p>
-                                        <p>0.22% (30 days)</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-
-                                            <button class="btn btn-success" style="float:right;">Award</button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
+                            <div v-if="isCardVisible">
                             <AbstractInfo />
                         </div>
-                        <!-- <div class="col-lg-4 col-md-12 col-sm-12 mt-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-borderless">
-                                            <thead>
-                                                <tr>
-                                                    <th>Supplier Name</th>
-                                                    <th>PhilGeps Reg. No</th>
-                                                    <th>Line of Business</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-danger">SELECT</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+                        </div>
+                    
                         <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
                             <div class="card">
                                 <div class="card-body">
@@ -133,95 +38,74 @@
                                             :icon="['fas', 'list']"></font-awesome-icon>&nbsp;App Item List
                                     </h5>
                                     <div class="table-responsive">
-                                        <button type="button" @click="openModal()" class="btn btn-success"
-                                            style="float:right">Add Supplier</button>
-                                        <table class="table table-striped table-borderless">
+                                           
+                                            
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mr-2" style="float: right;"
+                                            @click="toggleCard()">Advanced Search</button>
+                                            <router-link  class="btn btn-outline-primary btn-fw btn-icon-text mr-2 mb-3"
+                                            style="float:right;" :to="{name: 'Awarding'}">Create Abstract of Quotation </router-link>
+
+                                        <table class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>App Item</th>
-                                                    <th>Description</th>
-                                                    <th>Quantity</th>
-                                                    <th>App Price</th>
+                                                    <th>ACTIONS</th>
+                                                    <th>Status</th>
+                                                    <th>Purchase Request No.</th>
+                                                    <th>Request For Quotation</th>
+                                                    <th>Abstract No.</th>
+                                                    <th>Winner Bidder</th>
                                                     <th>Total ABC</th>
+                                                    <th>Office</th>
+                                                    <th>Date Received</th>
+                                                    <th>Abstract Date</th>
+                                                    <th>Received By</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
+                                                <tr v-for="abstract_data in displayedItems" :key="abstract_data.id">
+                                                    <td style="width: 20%;">
+                                                        <button class="btn btn-icon mr-1"
+                                                            style="background-color:#059886;color:#fff;">
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'circle-check']"></font-awesome-icon>
+
+                                                        </button>
+                                                        <button class="btn btn-icon mr-1"
+                                                            style="background-color:#059886;color:#fff;">
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'eye']"></font-awesome-icon>
+
+                                                        </button>
+                                                        <button class="btn btn-icon mr-1"
+                                                            style="background-color:#059886;color:#fff;">
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'layer-group']"></font-awesome-icon>
+
+                                                        </button>
                                                     </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
+                                                    <td class="font-weight-bold">
+                                                        <div class="badge badge-success">{{abstract_data.status}}</div>
+
+                                                        </td>
+                                                    <td class="font-weight-bold">{{ abstract_data.pr_no}}</td>
+                                                    <td class="font-weight-bold">{{abstract_data.rfq_no}}</td>
                                                     <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
+                                                        
                                                     </td>
+                                                    <td></td>
+                                                    <td><font-awesome-icon :icon="['fas', 'peso-sign']" /> {{ this.$formatTotalAmount(abstract_data.app_price)}}</td>
+                                                    <td>{{abstract_data.office}}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>ASR</td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-bold"></td>
-                                                    <td class="font-weight-medium">
-                                                        <div class="badge badge-success">Completed</div>
-                                                    </td>
-                                                </tr>
+
 
 
                                             </tbody>
                                         </table>
+                                        <Pagination :total="abstract_data.length" @pageChange="onPageChange" />
+
                                     </div>
                                 </div>
                             </div>
@@ -235,11 +119,14 @@
 
     </div>
 </template>
+
+
 <script>
 import Navbar from '../../layout/Navbar.vue';
 import Sidebar from '../../layout/Sidebar.vue';
 import FooterVue from '../../layout/Footer.vue';
 import BreadCrumbs from '../../dashboard_tiles/BreadCrumbs.vue';
+import StatBox from '../stat_board.vue';
 import UserInfo from '../../procurement/user_info.vue';
 import Pagination from '../Pagination.vue';
 import SelectSupplierModal from "./modal/modal_select_supplier.vue";
@@ -247,17 +134,21 @@ import AbstractInfo from "./panel/abstract_info.vue";
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core'; // Import the library object
-import { faCircleInfo, faList } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faCircleInfo, faEye, faLayerGroup, faList, faPesoSign } from '@fortawesome/free-solid-svg-icons';
 
 
-library.add(faCircleInfo, faList);
+library.add(faCircleInfo, faList, faCircleCheck, faEye, faLayerGroup,faPesoSign);
 
 export default {
-    name: 'Awarding',
+    name: 'Abstract of Quotation',
     data() {
         return {
             modalVisible: false,
             abstract_no: null,
+            abstract_data: [],
+            currentPage: 1,
+            itemsPerPage: 5,
+            isCardVisible:false,
         }
     },
     components: {
@@ -269,9 +160,42 @@ export default {
         Pagination,
         FontAwesomeIcon,
         SelectSupplierModal,
-        AbstractInfo
+        AbstractInfo,
+        StatBox
+    },
+    computed: {
+
+        totalPages() {
+            return Math.ceil(this.abstract_data.length / this.itemsPerPage);
+        },
+        displayedItems() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.abstract_data.slice(start, end);
+        },
+    },
+    mounted() {
+        this.load_abstract_data();
     },
     methods: {
+        toggleCard() {
+            this.isCardVisible = !this.isCardVisible;
+        },
+        load_abstract_data()
+        {
+            axios.get(`../../api/load_abstract_data`)
+                .then(response => {
+                    this.abstract_data = response.data.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        },
+        onPageChange(page) {
+            this.currentPage = page;
+            // Fetch data for the new page
+            this.loadData();
+        },
         openModal() {
             this.modalVisible = true;
         },

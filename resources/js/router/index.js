@@ -22,6 +22,7 @@ import rfq_details from "../components/procurement/rfq/rfq_details.vue";
 
 //ABSTRACT
 import dashboard_abstract from "../components/procurement/abstract/index.vue";
+import awarding from "../components/procurement/abstract/panel/awarding.vue";
 
 //HR Section
 import employees_directory from "../components/human_resource/employees_directory/index.vue";
@@ -29,7 +30,7 @@ import employees_directory from "../components/human_resource/employees_director
 // ICT TA
 import dashboard_ict_ta from "../components/rictu/ict_ta/index.vue";
 import create_ict from "../components/rictu/ict_ta/create.vue";
-
+import view_ict from "../components/rictu/ict_ta/view.vue";
 const routes = [
     {
         path: '/',
@@ -125,6 +126,16 @@ const routes = [
         component:dashboard_abstract
     },
     {
+        path:'/procurement/abstract/awarding',
+        name:'Awarding',
+        component:awarding
+    },
+    {
+        path:'/procurement/abstract/awarding/:id',
+        name:'Abstract',
+        component:awarding
+    },
+    {
         path:'/rictu/ict_ta/index',
         name:'ICT Technical Assistance',
         component:dashboard_ict_ta
@@ -135,16 +146,15 @@ const routes = [
         component:create_ict
     },
     {
+        path:'/rictu/ict_ta/:id',
+        name:'View ICT Form',
+        component:view_ict
+    },
+    {
         path:'/human_resource/employees_directory/index',
         name:'Employees Directory',
         component:employees_directory
     }
-   
-   
-
-
-
-
 
 ];
 const router = createRouter({

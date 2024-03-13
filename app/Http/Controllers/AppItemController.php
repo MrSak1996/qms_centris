@@ -90,4 +90,8 @@ class AppItemController extends Controller
         ]);
         $app_item->save();
     }
+    public function post_complete_ta()
+    {
+        echo 'a';
+    }
 }

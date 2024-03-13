@@ -24,13 +24,14 @@
 }
 </style>
 <template>
-    <Pagination :total="purchaseRequests.length" @pageChange="onPageChange" />
 
-    <table id="pr_tbl" style="width: 100%;" class="table table-striped display expandable-table dataTable no-footer"
-        role="grid">
+    <table id="pr_id" class="table table-striped table-bordered mb-3">
+
 
         <thead>
             <tr role="row">
+                <th style="width: 4px;">
+                    ACTION</th>
                 <th class="select-checkbox sorting_disabled" rowspan="1" colspan="1" aria-label="Quote#"
                     style="width: 61px;"> PURCHASE REQUEST #</th>
 
@@ -49,13 +50,59 @@
                     ELAPSED</th>
                 <th class="details-control sorting_disabled" rowspan="1" colspan="1" aria-label="" style="width: 4px;">
                     CREATED BY</th>
-                <th class="details-control sorting_disabled" rowspan="1" colspan="1" aria-label="" style="width: 4px;">
-                    ACTION</th>
+           
             </tr>
         </thead>
 
         <tbody>
             <tr v-for="purchaseRequest in displayedItems" :key="purchaseRequest.id">
+                <td>
+                    <div v-if="this.userId == 1" class="template-demo d-flex justify-content-between flex-nowrap">
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" 
+                        @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
+                            <font-awesome-icon
+                            :icon="['fas', 'eye']"></font-awesome-icon>
+                        </button>
+
+                        
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" 
+                            @click="toGSS(purchaseRequest.id)">
+                            <font-awesome-icon :icon="['fas', 'paper-plane']" style="margin-left: -3px;" />
+                        </button>
+
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
+                            <font-awesome-icon :icon="['fas', 'trash']" style="margin-left: -3px;" />
+
+                        </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="exportPurchaseRequest(purchaseRequest.id)">
+                            <font-awesome-icon :icon="['fas', 'download']" style="margin-left: -3px;" /> 
+                        </button>
+                    </div>
+
+                    <div v-else-if="purchaseRequest.user_id == this.userId"
+                        class="template-demo d-flex justify-content-between flex-nowrap">
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" 
+                        @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
+                            <font-awesome-icon
+                            :icon="['fas', 'eye']"></font-awesome-icon>
+                        </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
+                            <font-awesome-icon :icon="['fas', 'trash']" style="margin-left: -3px;" />
+
+                        </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="exportPurchaseRequest(purchaseRequest.id)">
+                            <font-awesome-icon :icon="['fas', 'download']" style="margin-left: -3px;" /> 
+                        </button>
+                    </div>
+                    <div v-else class="template-demo d-flex justify-content-between flex-nowrap">
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" 
+                        @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
+                            <font-awesome-icon
+                            :icon="['fas', 'eye']"></font-awesome-icon>
+                        </button>
+
+                    </div>
+                </td>
                 <td>
                     <div class="badge badge-default"
                         @click="$router.push({ path: `/procurement/view_pr/${purchaseRequest.id}` })">
@@ -85,53 +132,13 @@
                 <td>5 minutes ago</td>
                 <td>{{ purchaseRequest.created_by }}</td>
 
-                <td>
-                    <div v-if="this.userId == 1" class="template-demo d-flex justify-content-between flex-nowrap">
-                        <button type="button" class="btn btn-success btn-rounded btn-icon"
-                            @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                            <i class="ti-eye" style="margin-left: -3px;"></i>
-                        </button>
-                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
-                            @click="toGSS(purchaseRequest.id)">
-                            <font-awesome-icon :icon="['fas', 'paper-plane']" style="margin-left: -3px;" />
-                        </button>
-
-                        <button type="button" class="btn btn-danger btn-rounded btn-icon">
-                            <i class="ti-trash" style="margin-left: -3px;"></i>
-                        </button>
-                        <button class="btn btn-warning btn-rounded btn-icon">
-                            <i class="ti-download" @click="exportPurchaseRequest(purchaseRequest.id)"
-                                style="margin-left: -3px;"></i>
-                        </button>
-                    </div>
-
-                    <div v-else-if="purchaseRequest.user_id == this.userId"
-                        class="template-demo d-flex justify-content-between flex-nowrap">
-                        <button type="button" class="btn btn-success btn-rounded btn-icon"
-                            @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                            <i class="ti-eye" style="margin-left: -3px;"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger btn-rounded btn-icon">
-                            <i class="ti-trash" style="margin-left: -3px;"></i>
-
-                        </button>
-                        <button class="btn btn-warning btn-rounded btn-icon">
-                            <i class="ti-download" @click="exportPurchaseRequest(purchaseRequest.id)"
-                                style="margin-left: -3px;"></i>
-                        </button>
-                    </div>
-                    <div v-else class="template-demo d-flex justify-content-between flex-nowrap">
-                        <button type="button" class="btn btn-success btn-rounded btn-icon"
-                            @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                            <i class="ti-eye" style="margin-left: -3px;"></i>
-                        </button>
-
-                    </div>
-                </td>
+              
 
             </tr>
         </tbody>
     </table>
+    <Pagination :total="purchaseRequests.length" @pageChange="onPageChange" />
+
 </template>
 
 <script>
@@ -139,16 +146,16 @@ import axios from 'axios';
 import Pagination from './Pagination.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core'; // Import the library object
-import { faEye, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faEye, faPaperPlane,faTrash } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "vue3-toastify";
-library.add(faEye, faPaperPlane);
+library.add(faEye, faPaperPlane,faDownload,faTrash);
 export default {
     data() {
         return {
             userId: null,
             purchaseRequests: [],
             currentPage: 1,
-            itemsPerPage: 10,
+            itemsPerPage: 5,
         };
     },
     components: {
@@ -170,7 +177,6 @@ export default {
     },
     mounted() {
         this.loadData();
-
     },
     methods: {
 
@@ -178,7 +184,6 @@ export default {
             axios.post(`../api/fetchPurchaseReqData`)
                 .then(response => {
                     this.purchaseRequests = response.data.data;
-
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);

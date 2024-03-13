@@ -5,6 +5,10 @@ use App\Http\Controllers\AppItemController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RFQController;
 use App\Http\Controllers\RICTUController;
+use App\Http\Controllers\CRUDController;
+use App\Http\Controllers\AbstractController;
+use App\Http\Controllers\SupplierController;
+
 
 use App\Models\AppItemModel;
 use App\Models\PurchaseRequestItemModel;
@@ -44,12 +48,21 @@ Route::middleware('api')->group(function () {
 Route::middleware('api')->group(function () {
     Route::get('fetch_ict_request', [RICTUController::class, 'fetch_ict_request']);
 });
+
+Route::middleware('api')->group(function () {
+    Route::get('load_abstract_data', [AbstractController::class, 'load_abstract_data']);
+});
 Route::middleware('api')->group(function () {
     Route::get('generatePurchaseRequestNo', [PurchaseRequestController::class, 'generatePurchaseRequestNo']);
 });
 
 Route::middleware('api')->group(function () {
     Route::get('generateRFQNo', [RFQController::class, 'generateRFQNo']);
+});
+
+
+Route::middleware('api')->group(function () {
+    Route::get('generateAbstractNo', [AbstractController::class, 'generateAbstractNo']);
 });
 
 Route::middleware('api')->group(function () {
@@ -60,6 +73,14 @@ Route::middleware('api')->group(function () {
 });
 
 Route::middleware('api')->group(function () {
+    Route::get('fetch_rfq', [RFQController::class, 'fetch_rfq']);
+});
+
+Route::middleware('api')->group(function () {
+    Route::get('fetch_supplier', [SupplierController::class, 'fetch_supplier']);
+});
+
+Route::middleware('api')->group(function () {
     Route::get('generateStockNumber', [AppItemController::class, 'generateStockNumber']);
 });
 
@@ -67,6 +88,19 @@ Route::middleware('api')->group(function () {
 
 Route::middleware('api')->group(function () {
     Route::get('countTotalItem/{cur_year}', [AppItemController::class, 'countTotalItem']);
+});
+
+
+Route::middleware('api')->group(function () {
+    Route::get('countICTRequest/{cur_year}', [RICTUController::class,'countICTRequest']);
+});
+
+Route::middleware('api')->group(function () {
+    Route::get('countDRAFT/{status}', [RICTUController::class,'countDRAFT']);
+});
+
+Route::middleware('api')->group(function () {
+    Route::get('countPurchaseRequestStatistics/{cur_year}', [PurchaseRequestController::class,'countPurchaseRequestStatistics']);
 });
 
 Route::middleware('api')->group(function () {
@@ -92,6 +126,8 @@ Route::middleware('api')->group(function () {
 });
 
 
+
+
 Route::post('login',[UserController::class,'login']);
 Route::post('post_add_appItem',[AppItemController::class,'post_add_appItem']);
 Route::post('post_create_ict_request',[RICTUController::class,'post_create_ict_request']);
@@ -104,10 +140,23 @@ Route::post('post_update_purchaseRequestDetailsForm',[PurchaseRequestController:
 Route::post('fetchCart', [PurchaseRequestController::class, 'fetchCart']);
 Route::post('fetchPurchaseReqData', [PurchaseRequestController::class, 'fetchPurchaseReqData']);
 Route::post('fetchSubmittedtoGSS', [PurchaseRequestController::class, 'fetchSubmittedtoGSS']);
+Route::post('fetch_app_item', [SupplierController::class, 'fetch_app_item']);
+Route::post('fetch_app_item_details', [SupplierController::class, 'fetch_app_item_details']);
+Route::post('fetch_supplier_quotation', [SupplierController::class, 'fetch_supplier_quotation']);
+Route::post('fetch_supplier_title', [SupplierController::class, 'fetch_supplier_title']);
+Route::post('post_supplier_quote', [SupplierController::class, 'post_supplier_quote']);
+Route::post('post_create_abstract', [AbstractController::class, 'post_create_abstract']);
 Route::post('total_amount', [PurchaseRequestController::class, 'total_amount']);    
-Route::post('post_update_status', 'PurchaseRequestController@post_update_status')->name('post.update.status');
+// Route::post('post_update_status', 'PurchaseRequestController@post_update_status')->name('post.update.status');
 Route::post('post_update_status',[PurchaseRequestController::class,'post_update_status']);
-Route::post('post_received_ict_request',[RICTUController::class,'post_received_ict_request']);
+Route::post('fetch_ict_req_details',[RICTUController::class,'fetch_ict_req_details']);
+
+
+Route::post('post_complete',[CRUDController::class,'post_complete']);
+Route::post('post_received_ict_request',[CRUDController::class,'post_received_ict_request']);
+
+
+
 
 
 // R F Q
