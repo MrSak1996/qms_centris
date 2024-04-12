@@ -8,6 +8,7 @@ use App\Http\Controllers\RICTUController;
 use App\Http\Controllers\CRUDController;
 use App\Http\Controllers\AbstractController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PurchaseOrderController;
 
 
 use App\Models\AppItemModel;
@@ -66,6 +67,15 @@ Route::middleware('api')->group(function () {
 });
 
 Route::middleware('api')->group(function () {
+    Route::get('generatePurchaseOrderNo', [PurchaseOrderController::class, 'generatePurchaseOrderNo']);
+});
+
+
+Route::middleware('api')->group(function () {
+    Route::get('fetch_created_abstract', [AbstractController::class, 'fetch_created_abstract']);
+});
+
+Route::middleware('api')->group(function () {
     Route::get('generateICTControlNo', [RICTUController::class, 'generateICTControlNo']);
 });
 Route::middleware('api')->group(function () {
@@ -120,7 +130,9 @@ Route::middleware('api')->group(function () {
 Route::middleware('api')->group(function () {
     Route::get('viewPurchaseRequest/{id}', [PurchaseRequestController::class, 'viewPurchaseRequest']);
 });
-
+Route::middleware('api')->group(function () {
+    Route::get('viewRFQItems/{id}', [RFQController::class, 'viewRFQItems']);
+});
 Route::middleware('api')->group(function () {
     Route::get('fetchUser/{userId}',[UserController::class, 'fetchUserData']);
 });
@@ -142,10 +154,13 @@ Route::post('fetchPurchaseReqData', [PurchaseRequestController::class, 'fetchPur
 Route::post('fetchSubmittedtoGSS', [PurchaseRequestController::class, 'fetchSubmittedtoGSS']);
 Route::post('fetch_app_item', [SupplierController::class, 'fetch_app_item']);
 Route::post('fetch_app_item_details', [SupplierController::class, 'fetch_app_item_details']);
+Route::post('fetchPurchaseRequestData', [PurchaseOrderController::class, 'fetchPurchaseRequestData']);
+Route::post('fetch_winner_supplier', [PurchaseOrderController::class, 'fetch_winner_supplier']);
 Route::post('fetch_supplier_quotation', [SupplierController::class, 'fetch_supplier_quotation']);
 Route::post('fetch_supplier_title', [SupplierController::class, 'fetch_supplier_title']);
 Route::post('post_supplier_quote', [SupplierController::class, 'post_supplier_quote']);
 Route::post('post_create_abstract', [AbstractController::class, 'post_create_abstract']);
+Route::post('post_create_po',[PurchaseOrderController::class,'post_create_po']);
 Route::post('total_amount', [PurchaseRequestController::class, 'total_amount']);    
 // Route::post('post_update_status', 'PurchaseRequestController@post_update_status')->name('post.update.status');
 Route::post('post_update_status',[PurchaseRequestController::class,'post_update_status']);
@@ -154,6 +169,7 @@ Route::post('fetch_ict_req_details',[RICTUController::class,'fetch_ict_req_detai
 
 Route::post('post_complete',[CRUDController::class,'post_complete']);
 Route::post('post_received_ict_request',[CRUDController::class,'post_received_ict_request']);
+Route::post('getSmallestQuotationsForItems',[SupplierController::class,'getSmallestQuotationsForItems']);
 
 
 

@@ -17,7 +17,7 @@
                   <label>Purchase Request Number</label>
                   <multiselect v-model="selected" :options="options" label="label" :multiple="true"></multiselect>
                 </div>
-                <TextInput label="RFQ Number" v-model="rfq_no" :value="rfq_no" :readonly="true" />
+                <TextInput label="RFQ Number" v-model="rfq_no" :value="rfq_no" :readonly="true" iconValue="gear" />
                 <SelectInput label="Mode of Procurement" v-model="selectedMode">
                   <option value="1" data-id="Small Value Procurement" data-value="1">Small Value Procu rement</option>
                   <option value="2" data-id="Shopping" data-value="2">Shopping</option>
@@ -27,12 +27,15 @@
                   <option value="7" data-id="Public Bidding" data-value="7">Public Bidding</option>
                   <option value="8" data-id="Not Applicable N/A" data-value="8">Not Applicable N/A</option>
                 </SelectInput>
-                <TextInput v-model="rfq_date" label="RFQ Number" type="date" />
+                <TextInput v-model="rfq_date" label="RFQ Date" type="datetime-local" iconValue="calendar" style="height:40px;" class="mb-3"/>
                 <TextAreaInput v-model="particulars" label="Particulars" />
-                <button type="button" class="btn btn-primary" style="float: right;margin-left:5px;"
+                <button type="button"  class="btn btn-outline-primary btn-fw btn-icon-text mx-2" style="float: right;margin-left:5px;"
                   @click="close();">Close</button>
-                <button type="button" class="btn btn-success" style="float: right;"
-                  @click="post_create_rfq()">Save</button>
+
+            
+                  <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="post_create_rfq()" style="float: right;">
+                    Save
+                  </button>
 
               </div>
             </div>

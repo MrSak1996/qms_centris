@@ -101,27 +101,28 @@ h5 {
                             </div>
                             <div class="card mt-4">
                                 <div class="card-body">
-                                    <div class="card-title"
-                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="card-title d-flex justify-content-between align-items-center">
                                         <h5 class="card-title">
-                                            <font-awesome-icon :icon="['fas', 'list']"></font-awesome-icon>&nbsp;ICT
-                                            Technical Assistance Monitoring
+                                            <font-awesome-icon :icon="['fas', 'list']"></font-awesome-icon>&nbsp;ICT Technical Assistance Monitoring
                                         </h5>
-                                        <button class="btn btn-outline-primary btn-fw btn-icon-text"
-                                            style="margin-left:600px">
-                                            <router-link class="router-class" style="color:#059886;"
-                                                :to="{ name: 'Create ICT Technical Assistance' }">
-                                                Create Request </router-link>
-                                        </button>
-                                        <button class="btn btn-outline-primary btn-fw btn-icon-text"
-                                            @click="toggleCard()">Advanced Search</button>
+                                        <div class="d-flex">
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2">
+                                                <router-link class="router-class" style="color:#059886;" :to="{ name: 'Create ICT Technical Assistance' }">
+                                                    Create Request
+                                                </router-link>
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="toggleCard()">
+                                                Advanced Search
+                                            </button>
+                                        </div>
                                     </div>
-
+                            
                                     <div class="table-responsive">
                                         <ICTTable />
                                     </div>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>

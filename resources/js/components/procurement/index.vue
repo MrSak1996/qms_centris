@@ -79,10 +79,10 @@
                     <BreadCrumbs />
                     <div class="row">
                         <StatBox/>
-                        <div class="col-lg-3">
+                        <!-- <div class="col-lg-3">
                             <UserInfo/>
-                        </div>
-                        <div class="col-md-9 grid-margin mb-4 stretch-card">
+                        </div> -->
+                        <div class="col-md-12 grid-margin mb-4 stretch-card">
                             <DetailedReport />
                         </div>
                     </div>

@@ -39,31 +39,23 @@ class PurchaseRequestController extends Controller
         ]);
         $pr_opts->save();
     }
-    public function post_update_purchaseRequestDetails(Request $request)
+    public function post_create_purchaseRequest(Request $request)
     {
-        // Assuming your model is named PurchaseRequestModel
-        $purchaseRequest = PurchaseRequestModel::where('pr_no', $request->input('pr_no'))->first();
+        $purchaseRequest = new PurchaseRequestModel();
 
-        // Check if the record with the specified pr_no exists
-        if ($purchaseRequest) {
-            // Update the fields
-            $purchaseRequest->pmo = $request->input('pmo');
-            $purchaseRequest->type = $request->input('type');
-            $purchaseRequest->pr_date = $request->input('pr_date');
-            $purchaseRequest->target_date = $request->input('target_date');
-            $purchaseRequest->purpose = $request->input('purpose');
-            $purchaseRequest->current_step = $request->input('step');
+        $purchaseRequest->pr_no = $request->input('pr_no');
+        $purchaseRequest->pmo = $request->input('pmo');
+        $purchaseRequest->type = $request->input('type');
+        $purchaseRequest->pr_date = $request->input('pr_date');
+        $purchaseRequest->target_date = $request->input('target_date');
+        $purchaseRequest->purpose = $request->input('purpose');
+        $purchaseRequest->current_step = $request->input('step');
 
-            // Save the changes
-            $purchaseRequest->save();
+        $purchaseRequest->save();
 
-            // You can return a response, if needed
-            return response()->json(['message' => 'Purchase request details updated successfully']);
-        } else {
-            // Handle the case where the record with the specified pr_no doesn't exist
-            return response()->json(['error' => 'Purchase request not found'], 404);
-        }
+        return response()->json(['message' => 'Purchase request created successfully']);
     }
+
     public function post_update_purchaseRequestDetailsForm(Request $request)
     {
         // Assuming your model is named PurchaseRequestModel
@@ -266,8 +258,8 @@ class PurchaseRequestController extends Controller
             ->leftJoin('item_unit as unit', 'unit.id', '=', 'pr_items.unit')
             ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
             ->leftJoin('tbl_status as status', 'status.id', '=', 'pr.stat')
-            ->leftJoin('tbl_rfq as rfq','rfq.pr_id','=','pr.id')
-            ->whereIn('pr.stat', [4, 6]) // New where condition using IN operator
+            ->leftJoin('tbl_rfq as rfq', 'rfq.pr_id', '=', 'pr.id')
+            ->whereIn('pr.stat', [4, 6, 7, 8]) // New where condition using IN operator
             ->orderBy('pr.id', 'desc')
             ->groupBy('pr.id');
 
@@ -452,20 +444,20 @@ class PurchaseRequestController extends Controller
 
     public function countPurchaseRequestStatistics($cur_year)
     {
-            return response()->json(
-                PurchaseRequestModel::select(
-                    PurchaseRequestModel::raw('COUNT(*) as total_pr'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 1 THEN 1 END) as draft'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 2 THEN 1 END) as submitted_to_budget'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 3 THEN 1 END) as received_by_budget'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 4 THEN 1 END) as submitted_to_gss'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 5 THEN 1 END) as received_by_gss'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 6 THEN 1 END) as with_rfq'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 7 THEN 1 END) as awarded'),
-                    PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 8 THEN 1 END) as with_purchase_order'),
-                )
-                    ->whereYear('date_added',2024)
-                    ->get()
-            );
+        return response()->json(
+            PurchaseRequestModel::select(
+                PurchaseRequestModel::raw('COUNT(*) as total_pr'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 1 THEN 1 END) as draft'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 2 THEN 1 END) as submitted_to_budget'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 3 THEN 1 END) as received_by_budget'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 4 THEN 1 END) as submitted_to_gss'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 5 THEN 1 END) as received_by_gss'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 6 THEN 1 END) as with_rfq'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 7 THEN 1 END) as awarded'),
+                PurchaseRequestModel::raw('COUNT(CASE WHEN stat = 8 THEN 1 END) as with_purchase_order'),
+            )
+                ->whereYear('date_added', 2024)
+                ->get()
+        );
     }
 }

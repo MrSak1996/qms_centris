@@ -18,7 +18,7 @@ class SupplierQuotationModel extends Model
         'supplier_id',
         'rfq_id',
         'item_id',
-        'quotation'
-
+        'quotation',
+        'winner'
     ];
 }

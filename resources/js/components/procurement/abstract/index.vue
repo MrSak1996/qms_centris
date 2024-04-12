@@ -12,7 +12,7 @@
     background-color: #059886;
     color: #fff;
 }
-</style>
+</style>x
 
 <template>
     <div class="container-scroller">
@@ -25,36 +25,43 @@
                     <div class="row">
                         <StatBox />
 
-                        <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
                             <div v-if="isCardVisible">
-                            <AbstractInfo />
+                                <AbstractInfo />
+                            </div>
                         </div>
-                        </div>
-                    
+
                         <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
+
+
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title"><font-awesome-icon
-                                            :icon="['fas', 'list']"></font-awesome-icon>&nbsp;App Item List
-                                    </h5>
+                                    <div class="card-title d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title">
+                                            <font-awesome-icon
+                                                :icon="['fas', 'list']"></font-awesome-icon>&nbsp;Abstract of Quotation
+                                        </h5>
+                                        <div class="d-flex">
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="openModal()">
+                                              Create Abstract
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2"
+                                                @click="toggleCard()">
+                                                Advanced Search
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div class="table-responsive">
-                                           
-                                            
-                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mr-2" style="float: right;"
-                                            @click="toggleCard()">Advanced Search</button>
-                                            <router-link  class="btn btn-outline-primary btn-fw btn-icon-text mr-2 mb-3"
-                                            style="float:right;" :to="{name: 'Awarding'}">Create Abstract of Quotation </router-link>
-
                                         <table class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>ACTIONS</th>
+                                                    <th>Actions</th>
                                                     <th>Status</th>
                                                     <th>Purchase Request No.</th>
                                                     <th>Request For Quotation</th>
                                                     <th>Abstract No.</th>
-                                                    <th>Winner Bidder</th>
-                                                    <th>Total ABC</th>
+                                                    <th>Purchase Order</th>
+                                                    <th>Purchase Order Amount</th>
                                                     <th>Office</th>
                                                     <th>Date Received</th>
                                                     <th>Abstract Date</th>
@@ -68,9 +75,9 @@
                                                             style="background-color:#059886;color:#fff;">
                                                             <font-awesome-icon
                                                                 :icon="['fas', 'circle-check']"></font-awesome-icon>
-
                                                         </button>
                                                         <button class="btn btn-icon mr-1"
+                                                            @click="view_abstract(abstract_data.rfq_id)"
                                                             style="background-color:#059886;color:#fff;">
                                                             <font-awesome-icon
                                                                 :icon="['fas', 'eye']"></font-awesome-icon>
@@ -84,19 +91,27 @@
                                                         </button>
                                                     </td>
                                                     <td class="font-weight-bold">
-                                                        <div class="badge badge-success">{{abstract_data.status}}</div>
+                                                        <div class="badge badge-success">{{ abstract_data.status }}
+                                                        </div>
 
-                                                        </td>
-                                                    <td class="font-weight-bold">{{ abstract_data.pr_no}}</td>
-                                                    <td class="font-weight-bold">{{abstract_data.rfq_no}}</td>
-                                                    <td class="font-weight-medium">
-                                                        
                                                     </td>
+                                                    <td class="font-weight-bold">{{ abstract_data.pr_no }}</td>
+                                                    <td class="font-weight-bold">{{ abstract_data.rfq_no }}</td>
+                                                    <td class="font-weight-medium">
+                                                        {{ abstract_data.abstract_no }}
+                                                    </td>
+                                                    <td v-if="abstract_data.po_no" class="font-weight-bold">
+                                                        {{ abstract_data.po_no }}
+                                                    </td>
+                                                    <td v-else>
+                                                        <div class="badge badge-success"
+                                                            @click="create_po(abstract_data.rfq_id)">Create P.O</div>
+                                                    </td>
+                                                    <td><font-awesome-icon :icon="['fas', 'peso-sign']" /> {{
+                                this.$formatTotalAmount(abstract_data.po_amount) }}</td>
+                                                    <td>{{ abstract_data.office }}</td>
                                                     <td></td>
-                                                    <td><font-awesome-icon :icon="['fas', 'peso-sign']" /> {{ this.$formatTotalAmount(abstract_data.app_price)}}</td>
-                                                    <td>{{abstract_data.office}}</td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>{{ abstract_data.abstract_date }}</td>
                                                     <td></td>
                                                 </tr>
 
@@ -137,7 +152,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'; // Import the libra
 import { faCircleCheck, faCircleInfo, faEye, faLayerGroup, faList, faPesoSign } from '@fortawesome/free-solid-svg-icons';
 
 
-library.add(faCircleInfo, faList, faCircleCheck, faEye, faLayerGroup,faPesoSign);
+library.add(faCircleInfo, faList, faCircleCheck, faEye, faLayerGroup, faPesoSign);
 
 export default {
     name: 'Abstract of Quotation',
@@ -146,9 +161,10 @@ export default {
             modalVisible: false,
             abstract_no: null,
             abstract_data: [],
+            supplier: [],
             currentPage: 1,
             itemsPerPage: 5,
-            isCardVisible:false,
+            isCardVisible: false,
         }
     },
     components: {
@@ -160,7 +176,7 @@ export default {
         Pagination,
         FontAwesomeIcon,
         SelectSupplierModal,
-        AbstractInfo,
+    AbstractInfo,
         StatBox
     },
     computed: {
@@ -178,11 +194,17 @@ export default {
         this.load_abstract_data();
     },
     methods: {
+
+        create_po(id) {
+            this.$router.push({ path: '/procurement/purchase-order/create', query: { id: id } });
+        },
         toggleCard() {
             this.isCardVisible = !this.isCardVisible;
         },
-        load_abstract_data()
-        {
+        view_abstract(id) {
+            this.$router.push({ path: '/procurement/abstract/quotation', query: { id: id } });
+        },
+        load_abstract_data() {
             axios.get(`../../api/load_abstract_data`)
                 .then(response => {
                     this.abstract_data = response.data.data;

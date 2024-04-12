@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\RFQModel;
+use App\Models\AppItemModel;
 use App\Models\PurchaseRequestModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -64,5 +65,51 @@ class RFQController extends Controller
         // Optionally, you can return a response indicating success along with the SQL query
         return response()->json(['message' => 'RFQ created successfully', 'sql_query' => $rfq], 201);
     }
+
+    public function viewRFQItems($id, Request $request)
+    {
+
+        $query = AppItemModel::select(AppItemModel::raw('
+        tbl_app.id as `app_id`,
+        tbl_app.sn as `serial_no`,
+        tbl_app.item_title as `procurement`,
+        tbl_app.app_price as `app_price`,
+        unit.item_unit_title as `unit`,
+        pr_items.description as `description`,
+        pr_items.qty as `quantity`,
+        pr_items.qty * tbl_app.app_price as `total`,
+        pr.pr_no as `pr_no`,
+        pmo.pmo_title as `office`,
+        pmo.pmo_contact_person as  `signatory`,
+        pmo.designation as  `designation`,
+        pr.type as `type`,
+        pr.pr_date as `pr_date`,
+        pr.target_date as `target_date`,
+        pr.purpose as `particulars`,
+        pr.current_step as `step`,
+        tbl_status.title as `status`
+        '))
+            ->leftJoin('pr_items', 'pr_items.pr_item_id', '=', 'tbl_app.id')
+            ->leftJoin('item_unit as unit', 'unit.id', '=', 'tbl_app.unit_id')
+            ->leftJoin('pr', 'pr.id', '=', 'pr_items.pr_id')
+            ->leftJoin('pmo', 'pmo.id', '=', 'pr.pmo')
+            ->leftJoin('tbl_status', 'pr.stat', '=', 'tbl_status.id')
+            ->leftJoin('tbl_rfq','tbl_rfq.pr_id', '=','pr.id')
+            ->where('tbl_rfq.id', $id);
+
+        // Print the SQL query to check
+        // dd($query->toSql());
+
+        // Execute the query and return the result
+        $app_item = $query->get();
+
+        if ($request->has('export')) {
+            // Export the data to Excel
+            return $this->exportToExcel($app_item);
+        }
+
+        return response()->json($app_item);
+    }
+
     
 }

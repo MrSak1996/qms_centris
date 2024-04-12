@@ -77,103 +77,103 @@
                 <div class="content-wrapper">
                     <BreadCrumbs />
                     <div class="row">
-                        <div class="col-md-12 grid-margin mb-4 stretch-card">
-
-                            <div class="col-md-3 col-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">APP Item Encoded</p>
-                                        <p class="fs-30 mb-2">197</p>
-                                        <p>10.00% (as of today)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">APP Item with same Stock No</p>
-                                        <p class="fs-30 mb-2">61344</p>
-                                        <p>22.00% (30 days)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">Newly Encoded App Item</p>
-                                        <p class="fs-30 mb-2">34040</p>
-                                        <p>2.00% (30 days)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 card-dark-bluecol-sm-12 col-xs-12 mb-6 stretch-card transparent">
-                                <div class="card card-dark-blue">
-                                    <div class="card-body">
-                                        <p class="mb-4">App Item without Office</p>
-                                        <p class="fs-30 mb-2">47033</p>
-                                        <p>0.22% (30 days)</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12">
-
-                            <button type="button" class="btn btn-success btn-sm" @click="openModal()">Create RFQ</button>
-                            
+                        <StatBox/>
+                        <div class="col-lg-12 col-md-12 col-sm-12">                            
                             <div class="card">
                                 <div class="card-body">
+                                    <div class="card-title d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title">
+                                            <font-awesome-icon
+                                                :icon="['fas', 'list']"></font-awesome-icon>&nbsp;Create RFQ
+                                        </h5>
+                                        <div class="d-flex">
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="openModal()">
+                                              Create RFQ
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" >
+                                                Advanced Search
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     <div class="table-responsive">
-                                        <table style="width: 100%;"
-                                            class="table table-striped display expandable-table dataTable no-footer">
+                                        <table class="table table-striped table-bordered">
 
                                             <thead>
-                                                <tr role="row">
-                                                    <th class="select-checkbox sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="Select All" style="width: 61px;">
-                                                        <input type="checkbox" @change="selectAllRows($event)">
-                                                    </th>
-                                                    <th class="select-checkbox sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="Quote#" style="width: 61px;"> PURCHASE REQUEST #</th>
-                                                    <th class="select-checkbox sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="Quote#" style="width: 61px;"> RFQ #.</th>
-
-
-                                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                        colspan="1"
-                                                        aria-label="Policy holder: activate to sort column ascending"
-                                                        style="width: 107px;">TOTAL AMOUNT</th>
-                                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                        colspan="1" aria-label="Premium: activate to sort column ascending"
-                                                        style="width: 126px;">
-                                                        PURPOSE</th>
-                                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                        colspan="1" aria-label="Status: activate to sort column ascending"
-                                                        style="width: 126px;">PR
-                                                        DATE</th>
-                                                    <th class="sorting" tabindex="0" aria-controls="example" rowspan="1"
-                                                        colspan="1"
-                                                        aria-label="Updated at: activate to sort column ascending"
-                                                        style="width: 93px;">
-                                                        TARGET DATE</th>
-                                                    <th class="details-control sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="" style="width: 100px;">
-                                                        STATUS</th>
-                                                    <th class="details-control sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="" style="width: 4px;"> TIME
-                                                        ELAPSED</th>
-                                                    <th class="details-control sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="" style="width: 4px;">
-                                                        CREATED BY</th>
-                                                    <th class="details-control sorting_disabled" rowspan="1" colspan="1"
-                                                        aria-label="" style="width: 4px;">
-                                                        ACTION</th>
+                                                <tr>
+                                                    <th>Actions</th>
+                                                    <th>Purchase Request No.</th>
+                                                    <th>Request for Quotation No.</th>
+                                                    <th>Total Amount</th>
+                                                    <th>Purpose</th>
+                                                    <th>Purchase Date</th>
+                                                    <th>Target Date</th>
+                                                    <th>Status</th>
+                                                    <th>Time Elapsed</th>
+                                                    <th>Created By</th>
+                                                   
                                                 </tr>
                                             </thead>
 
                                             <tbody>
                                                 <tr v-for="purchaseRequest in displayedItems" :key="purchaseRequest.id">
                                                     <td>
-                                                        <input type="checkbox" @change="selectRow(purchaseRequest.id)">
+                                                        <div v-if="this.userId == 1" class="template-demo d-flex justify-content-between flex-nowrap">
+                                                            
+                                                        <button class="btn btn-icon mr-1" @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)" style="background-color:#059886;color:#fff;">
+                                                            <font-awesome-icon :icon="['fas', 'eye']"></font-awesome-icon> </button>
+                                                        <button class="btn btn-icon mr-1" @click="toGSS(purchaseRequest.id)" style="background-color:#059886;color:#fff;"> 
+                                                            <font-awesome-icon :icon="['fas', 'circle-check']"></font-awesome-icon> 
+                                                        </button>
+
+
+
+                                                            <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
+                                                                <i class="ti-trash" style="margin-left: -3px;"></i>
+                                                            </button>
+                                                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
+                                                                <i class="ti-download"
+                                                                    @click="exportPurchaseRequest(purchaseRequest.id)"
+                                                                    style="margin-left: -3px;"></i>
+                                                            </button>
+                                                        </div>
+
+                                                        <div v-else-if="purchaseRequest.user_id == this.userId"
+                                                            class="template-demo d-flex justify-content-between flex-nowrap">
+                                                                
+                                                            <button class="btn btn-icon mr-1" @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)"
+                                                            style="background-color:#059886;color:#fff;">
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'eye']"></font-awesome-icon>
+                                                        </button>
+                                                            <button type="button"
+                                                                class="btn btn-danger btn-rounded btn-icon">
+                                                                <i class="ti-trash" style="margin-left: -3px;"></i>
+
+                                                            </button>
+                                                            <button class="btn btn-warning btn-rounded btn-icon">
+                                                                <i class="ti-download"
+                                                                    @click="exportPurchaseRequest(purchaseRequest.id)"
+                                                                    style="margin-left: -3px;"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div v-else
+                                                            class="template-demo d-flex justify-content-between flex-nowrap">
+                                                                  
+                                                            <button class="btn btn-icon mr-1" @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)"
+                                                            style="background-color:#059886;color:#fff;">
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'eye']"></font-awesome-icon>
+                                                        </button>
+                                                        <button class="btn btn-icon mr-1"
+                                                        @click="toGSS(purchaseRequest.id)"
+                                                        style="background-color:#059886;color:#fff;">
+                                                        <font-awesome-icon
+                                                            :icon="['fas', 'circle-check']"></font-awesome-icon>
+
+                                                    </button>
+
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <div class="badge badge-default"
@@ -233,65 +233,7 @@
                                                     <td>5 minutes ago</td>
                                                     <td>{{ purchaseRequest.created_by }}</td>
 
-                                                    <td>
-                                                        <div v-if="this.userId == 1"
-                                                            class="template-demo d-flex justify-content-between flex-nowrap">
-                                                            <button type="button"
-                                                                class="btn btn-success btn-rounded btn-icon"
-                                                                @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                                                                <i class="ti-eye" style="margin-left: -3px;"></i>
-                                                            </button>
-                                                            <button type="button"
-                                                                class="btn btn-primary btn-rounded btn-icon"
-                                                                @click="toGSS(purchaseRequest.id)">
-                                                                <font-awesome-icon :icon="['fas', 'paper-plane']"
-                                                                    style="margin-left: -3px;" />
-                                                            </button>
-
-                                                            <button type="button"
-                                                                class="btn btn-danger btn-rounded btn-icon">
-                                                                <i class="ti-trash" style="margin-left: -3px;"></i>
-                                                            </button>
-                                                            <button class="btn btn-warning btn-rounded btn-icon">
-                                                                <i class="ti-download"
-                                                                    @click="exportPurchaseRequest(purchaseRequest.id)"
-                                                                    style="margin-left: -3px;"></i>
-                                                            </button>
-                                                        </div>
-
-                                                        <div v-else-if="purchaseRequest.user_id == this.userId"
-                                                            class="template-demo d-flex justify-content-between flex-nowrap">
-                                                            <button type="button"
-                                                                class="btn btn-success btn-rounded btn-icon"
-                                                                @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                                                                <i class="ti-eye" style="margin-left: -3px;"></i>
-                                                            </button>
-                                                            <button type="button"
-                                                                class="btn btn-danger btn-rounded btn-icon">
-                                                                <i class="ti-trash" style="margin-left: -3px;"></i>
-
-                                                            </button>
-                                                            <button class="btn btn-warning btn-rounded btn-icon">
-                                                                <i class="ti-download"
-                                                                    @click="exportPurchaseRequest(purchaseRequest.id)"
-                                                                    style="margin-left: -3px;"></i>
-                                                            </button>
-                                                        </div>
-                                                        <div v-else
-                                                            class="template-demo d-flex justify-content-between flex-nowrap">
-                                                            <button type="button"
-                                                                class="btn btn-success btn-rounded btn-icon" title="View PR"
-                                                                @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                                                                <i class="ti-eye" style="margin-left: -3px;"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-info btn-rounded btn-icon"
-                                                                title="Submit to Budget">
-                                                                <font-awesome-icon :icon="['fas', 'paper-plane']"
-                                                                    style="margin-left: -3px;" />
-                                                            </button>
-
-                                                        </div>
-                                                    </td>
+                                                  
 
                                                 </tr>
                                             </tbody>
@@ -321,6 +263,7 @@ import BreadCrumbs from '../../dashboard_tiles/BreadCrumbs.vue';
 import UserInfo from '../../procurement/user_info.vue';
 import Pagination from '../Pagination.vue';
 import ModalRFQ from './modal/modal_create_rfq.vue';
+import StatBox from '../stat_board.vue';
 
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -355,7 +298,8 @@ export default {
         UserInfo,
         Pagination,
         FontAwesomeIcon,
-        ModalRFQ
+        ModalRFQ,
+        StatBox
     },
     computed: {
         totalPages() {
@@ -370,6 +314,8 @@ export default {
     mounted() {
         this.loadData();
         this.fetchSubmittedPurchaseRequest();
+   this.userId= localStorage.getItem('userId');
+
 
     },
     methods: {

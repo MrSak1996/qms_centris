@@ -26,27 +26,60 @@ class AbstractController extends Controller
                 ->get()
         );
     }
+
+    public function fetch_created_abstract(Request $req)
+    {
+
+        $id = $req->input('id');
+        return response()->json(
+            AbstractModel::select(
+                AbstractModel::raw('
+            tbl_abstract.abstract_no,
+            p.pr_no,
+            pmo.pmo_title as `office`,
+            r.rfq_no as rfq_no
+        ')
+            )
+                ->leftJoin('tbl_rfq as r', 'r.id', '=', 'tbl_abstract.rfq_id')
+                ->leftJoin('pr as p', 'p.id', '=', 'tbl_abstract.pr_id')
+                ->leftJoin('tbl_status as ss', 'ss.id', '=', 'p.stat')
+                ->leftJoin('supplier as s', 's.id', '=', 'tbl_abstract.supplier_id')
+                ->leftJoin('pmo', 'pmo.id', '=', 'p.pmo')
+                ->leftJoin('pr_items', 'pr_items.pr_id', '=', 'p.id')
+                ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
+                ->where('tbl_abstract.id', $id)
+                ->groupBy('tbl_abstract.abstract_no', 'p.pr_no', 'pmo.pmo_title', 'r.rfq_no')
+                ->get()
+        );
+    }
+
     public function load_abstract_data(Request $request)
     {
         $page = $request->query('page');
         $itemsPerPage = $request->query('itemsPerPage', 500);
         $query = AbstractModel::select(AbstractModel::raw('
         tbl_abstract.id AS `id`,
+        MAX(r.id) AS `rfq_id`,
         MAX(r.rfq_no) AS `rfq_no`,
         MAX(p.pr_no) AS `pr_no`,
+        MAX(po.po_no) AS `po_no`,
+        MAX(s.supplier_title) AS `supplier_title`,
+        MAX(tbl_abstract.abstract_no) AS `abstract_no`,
+        MAX(tbl_abstract.date_created) AS `abstract_date`,
         MAX(ss.title) AS `status`,
-        SUM(app.app_price * pr_items.qty) AS `app_price`,
+        MAX(po.po_amount) AS `po_amount`,
         MAX(pmo.pmo_title) as `office`
 
        
         '))
             ->leftJoin('tbl_rfq as r', 'r.id', '=', 'tbl_abstract.rfq_id')
-            ->leftJoin('pr as p', 'p.id', '=', 'tbl_abstract.pr_id')
+            ->leftJoin('pr as p', 'p.id', '=', 'r.pr_id')
             ->leftJoin('tbl_status as ss', 'ss.id', '=', 'p.stat')
             ->leftJoin('supplier as s', 's.id', '=', 'tbl_abstract.supplier_id')
-            ->leftJoin('pmo', 'pmo.id', '=', 'tbl_abstract.office_id')
+            ->leftJoin('pmo', 'pmo.id', '=', 'p.pmo')
             ->leftJoin('pr_items', 'pr_items.pr_id', '=', 'p.id')
             ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
+            ->leftJoin('tbl_purchase_order as po', 'po.rfq_id', '=', 'r.id')
             ->orderBy('tbl_abstract.id', 'desc')
             ->groupBy('tbl_abstract.id');
 
@@ -68,9 +101,7 @@ class AbstractController extends Controller
 
         ]);
 
-            $abstract->save();
+        $abstract->save();
         return response()->json(['message' => 'Data saved successfully']);
-
-
     }
 }

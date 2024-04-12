@@ -68,7 +68,7 @@ img {
                                                 <TextInput label="Agreed Timeline if any:" iconValue="check-circle" :readonly="false" />
                                             </div>
                                         </div>
-                                    </div>
+                                </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">

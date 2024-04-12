@@ -16,19 +16,20 @@
                             <div class="col-lg-12">
                                 <div class="row">
 
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
-                                        <div class="form-group">
+                                    <div class="col-lg-3 col-md-12 col-sm-12">
+                                        <div class="form-group" v-if="id == null">
                                             <label>RFQ Number:</label>
                                             <multiselect track-by="label" label="label" placeholder="Select one"
                                                 :searchable="false" v-model="rfq" :options="rfq_opt"></multiselect>
                                         </div>
-                                        <TextInput label="Abstract #" iconValue="question" v-model="abstract_no"
-                                            :value="abstract_no" :readonly="true" />
-                                        <TextInput label="Abstract Date" iconValue="calendar" type="datetime-local"
-                                            v-model="date_created" />
+
+                                        <TextInput v-else label="RFQ Number" iconValue="gear" style="height:40px;"
+                                            v-model="rfq_no" />
+
+
 
                                     </div>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                    <div class="col-lg-3 col-md-12 col-sm-12">
                                         <div class="form-group">
                                             <label>Supplier:</label>
                                             <multiselect track-by="label" label="label" placeholder="Select one"
@@ -36,13 +37,21 @@
                                                 :multiple="false">
                                             </multiselect>
                                         </div>
-                                        <TextInput label="Purchase Request #" iconValue="question" :readonly="true"
+                                        <!-- <TextInput label="Purchase Request #" iconValue="question" :readonly="true"
                                             :value="pr_no" />
                                         <TextInput label="Purchase Request Date" iconValue="calendar" :readonly="true"
-                                            :value="pr_date" />
+                                            :value="pr_date" /> -->
 
                                     </div>
-                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                    <div class="col-lg-3 col-md-12 col-sm-12">
+                                        <TextInput label="Abstract Number" iconValue="gear" v-model="abstract_no"
+                                            :value="abstract_no" />
+                                    </div>
+                                    <div class="col-lg-3 col-md-12 col-sm-12">
+                                        <TextInput label="Abstract Date" iconValue="calendar" type="datetime-local"
+                                            style="height:40px;" v-model="date_created" />
+                                    </div>
+                                    <!-- <div class="col-lg-4 col-md-12 col-sm-12">
                                         <TextInput label="Total ABC" iconValue="peso-sign" :readonly="true"
                                             :value="total_abc" />
                                         <TextInput label="Office" iconValue="building" :readonly="true" :value="pmo" />
@@ -52,7 +61,7 @@
                                     </div>
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <TextAreaInput label="Particulars" :value="particulars" />
-                                    </div>
+                                    </div> -->
 
                                 </div>
                                 <div class="row">
@@ -125,9 +134,11 @@ export default {
     },
     data() {
         return {
+            id: this.$route.query.id,
             logo: dilg_logo,
             control_no: null,
             abstract_no: null,
+            abstract_id: null,
             pr_no: null,
             pr_id: null,
             particulars: null,
@@ -148,7 +159,16 @@ export default {
     mounted() {
         this.fetch_rfq();
         this.fetch_supplier();
+        if(this.id != null)
+        {
+            this.fetch_app_item_details(); // Fetch app item whenever rfq changes
+            this.fetch_app_item();
+        }else{
+
+        }
         this.generateAbstractNo();
+
+
     },
     watch: {
         rfq: {
@@ -166,6 +186,7 @@ export default {
             this.$emit('close');
         },
         async fetch_rfq() {
+
             try {
                 const response = await axios.get('../../api/fetch_rfq');
                 // Assuming response.data is an array of objects with 'label' and 'value' properties
@@ -185,9 +206,18 @@ export default {
         },
 
         fetch_app_item_details(rfqId) {
-            const requestData = {
-                id: rfqId.value
-            };
+            let requestData =null 
+
+            if (this.id == null) {
+                requestData = {
+                    id: rfqId.value
+                };
+            } else {
+                requestData = {
+                    id: this.$route.query.id
+                };
+            }
+
 
             axios.post(`../../api/fetch_app_item_details`, requestData)
                 .then(response => {
@@ -195,6 +225,7 @@ export default {
                     response.data.forEach(item => {
                         this.pr_id = item.id;
                         this.pr_no = item.pr_no;
+                        // this.abstract_no = item.abstract_no
                         this.particulars = item.particulars;
                         this.pr_date = item.pr_date;
                         this.rfq_date = item.rfq_date;
@@ -206,9 +237,17 @@ export default {
                 });
         },
         fetch_app_item(rfqId) {
-            const requestData = {
-                id: rfqId.value
-            };
+            let requestData = null
+            if (this.id == null) {
+                requestData = {
+                    id: rfqId.value
+                };
+            } else {
+                requestData = {
+                    id: this.$route.query.id
+                };
+            }
+
 
             axios.post(`../../api/fetch_app_item`, requestData)
                 .then(response => {
@@ -220,15 +259,27 @@ export default {
         },
         generateAbstractNo: async function () {
             try {
-                const response = await axios.get('../../api/generateAbstractNo');
-                const currentDate = new Date();
-                const year = currentDate.getFullYear();
-                const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-indexed
-                const abstractFormat = `${year}`;
-                const abstractSequence = String(response.data[0].abstract).padStart(4, '0'); // Pad with leading zeros
-                const abstract_no = `${abstractFormat}-${abstractSequence}`;
+                const id = this.$route.query.id;
+                if (id == null) {
+                    const response = await axios.get('../../api/generateAbstractNo');
+                    const currentDate = new Date();
+                    const year = currentDate.getFullYear();
+                    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-indexed
+                    const abstractFormat = `${year}`;
+                    const abstractSequence = String(response.data[0].abstract).padStart(4, '0'); // Pad with leading zeros
+                    const abstract_no = `${abstractFormat}-${abstractSequence}`;
+                    const abstract_id = response.data[0].abstract;
 
-                this.abstract_no = abstract_no;
+                    this.abstract_no = abstract_no;
+                    this.abstract_id = abstract_id;
+                } else {
+                    const id = this.$route.query.id;
+
+                    this.fetch_created_abstract(id)
+
+                }
+
+
             } catch (error) {
                 console.error('Error generating abstract number:', error);
             }
@@ -243,8 +294,7 @@ export default {
                 date_created: this.date_created
             })
                 .then(response => {
-                   
-                   
+
                 })
                 .catch(error => {
                     // Handle error
@@ -252,11 +302,20 @@ export default {
 
         },
         saveData() {
-            this.saveAbsract();
+            let rfqId = null;
+            if (this.id == null) {
+                this.saveAbsract();
+                rfqId = this.rfq.value;
+            }else{
+                rfqId = this.id;
+
+            }
+            
+        
             // Prepare data for saving
             const dataToSave = this.appItems.map(item => ({
                 supplier_id: this.supplier.value,
-                rfq_id: this.rfq.value,
+                rfq_id: rfqId,
                 pr_id: item.id,
                 date_created: this.date_created,
                 item_id: item.pr_item_id, // Assuming item.id is the ID of the app_item
@@ -271,18 +330,33 @@ export default {
                         autoClose: 100
                     });
                     setTimeout(() => {
-                        this.$router.push({
-                            name: 'Abstract',
-                            query: { id: this.abstract_no },
-                        });
-
+                        const id = this.$route.query.id;
+                        if (id == null) {
+                            this.$router.push({ path: '/procurement/abstract/quotation', query: { id: this.abstract_id } });
+                        } else {
+                            location.reload();
+                        }
                     }, 1000);
                 })
                 .catch(error => {
                     // Handle error
                 });
 
+
         },
+        fetch_created_abstract: async function (id) {
+            try {
+                const response = await axios.get(`../../api/fetch_created_abstract?id=${id}`);
+                this.abstract_no = response.data[0].abstract_no
+                this.pr_no = response.data[0].pr_no;
+                this.pmo = response.data[0].pmo_title;
+            } catch (error) {
+
+            }
+
+
+        }
+
 
     },
 

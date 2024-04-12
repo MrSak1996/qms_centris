@@ -24,15 +24,19 @@
                                                 Awarding of
                                                 Supplier
                                             </h5>
+                                            <div class="button-container">
+                                               
+                                                <button @click="toggleCard()"
+                                                    class="btn btn-outline-primary btn-fw btn-icon-text">Advanced
+                                                    Search</button>
+                                                    <button @click="openModal()"
+                                                    class="btn btn-outline-primary btn-fw btn-icon-text mr-2">Create Supplier
+                                                    Quotation</button>
+                                            </div>
 
-                                            <button @click="openModal()"
-                                            class="btn btn-outline-primary btn-fw btn-icon-text">Create
-                                            Supplier Quotation</button>
-                                            <button class="btn btn-outline-primary btn-fw btn-icon-text"
-                                                style="float:right" @click="toggleCard()">Advanced Search</button>
 
                                         </div>
-                                  
+
 
                                     </div>
                                 </div>
@@ -45,8 +49,7 @@
                                                 Supplier Quotation
                                             </h5>
 
-                                            <button 
-                                            class="btn btn-outline-primary btn-fw btn-icon-text">Award</button>
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text" @click="award(1)">Award</button>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-12">
@@ -64,7 +67,7 @@
                                                             <td v-for="(quotations, id) in appItems" :key="id">
                                                                 <ul>
                                                                     <li v-for="(quotation, index) in quotations"
-                                                                        :key="index">{{ quotation }}</li>
+                                                                        :key="index">{{ quotation}}</li>
                                                                 </ul>
                                                             </td>
                                                         </tr>
@@ -90,7 +93,14 @@
     </div>
 
 </template>
-
+<style>
+.button-container {
+    text-align: right;
+}
+.button-container button {
+    float: right;
+}
+</style>
 <script>
 
 import Navbar from '../../../layout/Navbar.vue';
@@ -153,7 +163,7 @@ export default {
         },
         fetch_supplier_quotation() {
             const requestData = {
-                id: 1
+                id:  this.$route.query.id
             };
 
             axios.post(`../../api/fetch_supplier_quotation`, requestData)
@@ -168,7 +178,13 @@ export default {
                         if (!appItems[quote.supplier_title]) {
                             appItems[quote.supplier_title] = [];
                         }
-                        appItems[quote.supplier_title].push(quote.item_title+"-(Php "+quote.quotation+")");
+                        if(quote.winner == 1)
+                        {
+                            appItems[quote.supplier_title].push(quote.item_title + "-(Php " + quote.quotation + ")" + "- winner");
+                        }else{
+                            appItems[quote.supplier_title].push(quote.item_title + "-(Php " + quote.quotation + ")");
+
+                        }
                     });
 
                     // Assign the transformed data to appItems
@@ -180,7 +196,26 @@ export default {
                 .catch(error => {
                     console.error('Error fetching supplier quotations:', error);
                 });
-        }
+        },
+        award(id) {
+            const userId = localStorage.getItem('userId');
+
+            axios.post('../../api/getSmallestQuotationsForItems', {
+                rfq_id: 1, //dummy data
+
+            }).then(() => {
+                toast.success('Success! This request has been received!', {
+                    autoClose: 2000
+                });
+                setTimeout(() => {
+                    location.reload();
+                }, 2000); // Adjust the delay as needed
+
+            }).catch((error) => {
+
+            })
+
+        },
 
     },
     components: {

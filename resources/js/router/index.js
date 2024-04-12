@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+import LoginForm from "../components/LoginForm.vue";
 import ExampleComponent from "../components/ExampleComponent.vue";
 import DashboardComponent from "../components/DashboardComponent.vue";
 import LoginComponent from "../components/LoginComponent.vue";
@@ -23,6 +24,10 @@ import rfq_details from "../components/procurement/rfq/rfq_details.vue";
 //ABSTRACT
 import dashboard_abstract from "../components/procurement/abstract/index.vue";
 import awarding from "../components/procurement/abstract/panel/awarding.vue";
+import quotation from "../components/procurement/abstract/panel/quotation.vue";
+
+// PURCHASE ORDER
+import create_po from "../components/procurement/purchase-order/panel/create.vue";
 
 //HR Section
 import employees_directory from "../components/human_resource/employees_directory/index.vue";
@@ -36,6 +41,11 @@ const routes = [
         path: '/',
         name: 'Login',
         component: LoginComponent
+    },
+    {
+        path: '/sign-in',
+        name: 'sign-in',
+        component: LoginForm
     },
     {
         path: '/dashboard',
@@ -131,10 +141,16 @@ const routes = [
         component:awarding
     },
     {
-        path:'/procurement/abstract/awarding/:id',
-        name:'Abstract',
-        component:awarding
+        path:'/procurement/abstract/:id',
+        name:'Quotation',
+        component:quotation
     },
+    {
+        path:'/procurement/purchase-order/:id',
+        name:'Create Purchase Order',
+        component:create_po
+    },
+  
     {
         path:'/rictu/ict_ta/index',
         name:'ICT Technical Assistance',
