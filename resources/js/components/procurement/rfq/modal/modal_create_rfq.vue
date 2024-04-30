@@ -21,21 +21,22 @@
                 <SelectInput label="Mode of Procurement" v-model="selectedMode">
                   <option value="1" data-id="Small Value Procurement" data-value="1">Small Value Procu rement</option>
                   <option value="2" data-id="Shopping" data-value="2">Shopping</option>
-                  <option value="4" data-id="NP Lease of Venue" data-value="4">NP Lease of Venue</option>
-                  <option value="5" data-id="Direct Contracting" data-value="5">Direct Contracting</option>
-                  <option value="6" data-id="Agency to Agency" data-value="6">Agency to Agency</option>
-                  <option value="7" data-id="Public Bidding" data-value="7">Public Bidding</option>
-                  <option value="8" data-id="Not Applicable N/A" data-value="8">Not Applicable N/A</option>
+                  <option value="3" data-id="NP Lease of Venue" data-value="3">NP Lease of Venue</option>
+                  <option value="4" data-id="Direct Contracting" data-value="4">Direct Contracting</option>
+                  <option value="5" data-id="Agency to Agency" data-value="5">Agency to Agency</option>
+                  <option value="6" data-id="Public Bidding" data-value="6">Public Bidding</option>
+                  <option value="7" data-id="Not Applicable N/A" data-value="7">Not Applicable N/A</option>
                 </SelectInput>
-                <TextInput v-model="rfq_date" label="RFQ Date" type="datetime-local" iconValue="calendar" style="height:40px;" class="mb-3"/>
+                <TextInput v-model="rfq_date" label="RFQ Date" type="datetime-local" iconValue="calendar" />
                 <TextAreaInput v-model="particulars" label="Particulars" />
-                <button type="button"  class="btn btn-outline-primary btn-fw btn-icon-text mx-2" style="float: right;margin-left:5px;"
-                  @click="close();">Close</button>
+                <button type="button" class="btn btn-outline-primary btn-fw btn-icon-text mx-2"
+                  style="float: right;margin-left:5px;" @click="close();">Close</button>
 
-            
-                  <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="post_create_rfq()" style="float: right;">
-                    Save
-                  </button>
+
+                <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="post_create_rfq()"
+                  style="float: right;">
+                  Save
+                </button>
 
               </div>
             </div>
@@ -46,7 +47,7 @@
   </div>
 </template>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
-  
+
 <script>
 import dilg_logo from "../../../../../assets/logo.png";
 import TextInput from "../../../micro/TextInput.vue";
@@ -93,6 +94,7 @@ export default {
   methods: {
 
     post_create_rfq() {
+      // console.log(this.selected.map(item => item.value));
       // Prepare data to be sent
       const userId = localStorage.getItem('userId');
       const requestData = {
@@ -103,13 +105,13 @@ export default {
       };
 
       // Send separate POST requests for each selected value
-        for (const prId of Object.values((this.selected.map(item => item.value)))) {
-          // Construct data for the current selected value
-          const prData = {
-            ...requestData,
-            pr_id: prId,
-            mode_id: this.selectedMode // Assuming mode_id is the correct property name
-          };
+      for (const prId of Object.values((this.selected.map(item => item.value)))) {
+        // Construct data for the current selected value
+        const prData = {
+          ...requestData,
+          pr_id: prId,
+          mode_id: this.selectedMode // Assuming mode_id is the correct property name
+        };
 
         // Send POST request using Axios for the current selected value
         axios.post('../../api/post_create_rfq', prData)
@@ -119,9 +121,7 @@ export default {
             toast.success('RFQ successfully created!', {
               autoClose: 100
             });
-            setTimeout(() => {
-              location.reload();
-            }, 2000);
+
           })
           .catch(error => {
             // Handle error
@@ -169,14 +169,14 @@ export default {
     },
 
 
-    close() {
-      this.$emit('close');
-    },
+      close() {
+        this.$emit('close');
+      },
   },
 };
 </script>
-  
-  
+
+
 <style>
 /* Style for dimming the background */
 .modal-background {
@@ -225,4 +225,3 @@ export default {
 
 /* You may need additional styles to customize the appearance of the modal */
 </style>
-  

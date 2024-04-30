@@ -124,6 +124,7 @@ export default {
         this.fetch_winner_supplier();
     },
     methods: {
+        
         generatePurchaseOrderNo: async function () {
             try {
                 const id = this.$route.query.id;
@@ -200,7 +201,7 @@ export default {
                 po_no: this.po_no,
                 supplier_id: this.supplier_id,
                 rfq_no: this.rfq_no,
-                rfq_id: this.rfq_id,
+                rfq_id: this.$route.query.id,
                 pr_id: this.pr_id,
                 purchase_amount: this.purchase_amount,
                 office: this.office,

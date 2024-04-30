@@ -58,25 +58,18 @@
             <tr v-for="purchaseRequest in displayedItems" :key="purchaseRequest.id">
                 <td>
                     <div v-if="this.userId == 1" class="template-demo d-flex justify-content-between flex-nowrap">
-                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" 
-                        @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)">
-                            <font-awesome-icon
-                            :icon="['fas', 'eye']"></font-awesome-icon>
-                        </button>
 
-                        
-                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" 
-                            @click="toGSS(purchaseRequest.id)">
-                            <font-awesome-icon :icon="['fas', 'paper-plane']" style="margin-left: -3px;" />
-                        </button>
-
-                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
-                            <font-awesome-icon :icon="['fas', 'trash']" style="margin-left: -3px;" />
-
-                        </button>
-                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="exportPurchaseRequest(purchaseRequest.id)">
-                            <font-awesome-icon :icon="['fas', 'download']" style="margin-left: -3px;" /> 
-                        </button>
+                    <div v-if="purchaseRequest.status_id == 8">
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)"> <font-awesome-icon :icon="['fas', 'eye']"></font-awesome-icon> </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="exportPurchaseRequest(purchaseRequest.id)"> <font-awesome-icon :icon="['fas', 'download']" style="margin-left: -3px;" /> </button>
+                    </div>
+                    <div v-else>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="viewPr(purchaseRequest.id, purchaseRequest.status_id, purchaseRequest.step)"> <font-awesome-icon :icon="['fas', 'eye']"></font-awesome-icon> </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="toBudget(purchaseRequest.id)"> <font-awesome-icon :icon="['fas', 'share-square']" style="margin-left: -3px;" /> </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="toGSS(purchaseRequest.id)"> <font-awesome-icon :icon="['fas', 'paper-plane']" style="margin-left: -3px;" /> </button>
+                        <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="exportPurchaseRequest(purchaseRequest.id)"> <font-awesome-icon :icon="['fas', 'download']" style="margin-left: -3px;" /> </button>
+                    </div>
+                       
                     </div>
 
                     <div v-else-if="purchaseRequest.user_id == this.userId"
@@ -109,26 +102,33 @@
                         <b>{{ purchaseRequest.pr_no }}</b><br><i>~{{ purchaseRequest.office }}~</i>
                     </div>
                 </td>
-                <td>{{ purchaseRequest.app_price }}</td>
+                <td>{{ this.$formatTotalAmount(purchaseRequest.app_price) }}</td>
                 <td>{{ purchaseRequest.particulars }}</td>
+
+                
                 <td>{{ purchaseRequest.pr_date }}</td>
                 <td>{{ purchaseRequest.target_date }}</td>
                 <td>
                     <div v-if="purchaseRequest.status_id == 1" class="badge badge-success">{{ purchaseRequest.status }}
                     </div>
-                    <div v-if="purchaseRequest.status_id == 2" class="badge badge-primary">{{ purchaseRequest.status }}
+                    <div v-if="purchaseRequest.status_id == 2" class="badge badge-success">{{ purchaseRequest.status }}
                     </div>
-                    <div v-if="purchaseRequest.status_id == 3" class="badge badge-warning">{{ purchaseRequest.status }}
+                    <div v-if="purchaseRequest.status_id == 3" class="badge badge-success">{{ purchaseRequest.status }}
                     </div>
-                    <div v-if="purchaseRequest.status_id == 4" class="badge badge-submitted_gss">{{ purchaseRequest.status
+                    <div v-if="purchaseRequest.status_id == 4" class="badge badge-success">{{ purchaseRequest.status
                     }}</div>
-                    <div v-if="purchaseRequest.status_id == 5" class="badge badge-received_gss">{{ purchaseRequest.status }}
+                    <div v-if="purchaseRequest.status_id == 5" class="badge badge-success">{{ purchaseRequest.status }}
                     </div>
-                    <div v-if="purchaseRequest.status_id == 6" class="badge badge-with-rfq">{{ purchaseRequest.status }}
+                    <div v-if="purchaseRequest.status_id == 6" class="badge badge-success">{{ purchaseRequest.status }}
                     </div>
-                    <div v-if="purchaseRequest.status_id == 7" class="badge badge-cancelled">{{ purchaseRequest.status }}
+                    <div v-if="purchaseRequest.status_id == 7" class="badge badge-success">{{ purchaseRequest.status }}
                     </div>
+                    <div v-if="purchaseRequest.status_id == 8" class="badge badge-success">{{ purchaseRequest.status }}
+                    </div>
+                    
+                    
                 </td>
+                
                 <td>5 minutes ago</td>
                 <td>{{ purchaseRequest.created_by }}</td>
 
@@ -146,9 +146,9 @@ import axios from 'axios';
 import Pagination from './Pagination.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core'; // Import the library object
-import { faDownload, faEye, faPaperPlane,faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faEye, faPaperPlane,faShareSquare,faTrash } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "vue3-toastify";
-library.add(faEye, faPaperPlane,faDownload,faTrash);
+library.add(faEye, faPaperPlane,faDownload,faTrash,faShareSquare);
 export default {
     data() {
         return {
@@ -191,29 +191,38 @@ export default {
         },
         onPageChange(page) {
             this.currentPage = page;
-            // Fetch data for the new page
+            // Fetch data for the new page  
             this.loadData();
         },
         viewPr(pr_id, status, step_no) {
             // Check if the status is DRAFT
-            if (step_no === 3) {
+            
                 // If DRAFT, use 'procurement/update_pr/' route
                 this.$router.push({ path: '/procurement/update_pr', query: { id: pr_id, step: step_no } });
-            } else {
-                // Otherwise, use the 'procurement/view_pr/' route
-                this.$router.push({ path: `/procurement/view_pr/${pr_id}` });
-            }
+           
         },
         exportPurchaseRequest(pr_id) {
             window.location.href = `../api/export-purchase-request/${pr_id}?export=true`;
         },
+        toBudget(id){
+            this.$updatePurchaseRequestStatus(id, 2);
+            toast.success('Successfully submitted to the Budget!', {
+                autoClose: 2000
+            });
+            setTimeout(() => {
+            location.reload();
+                
+            }, 2000);
+        },
         toGSS(id) {
-
             this.$updatePurchaseRequestStatus(id, 4);
             toast.success('Successfully submitted to the GSS!', {
                 autoClose: 2000
             });
+            setTimeout(() => {
             location.reload();
+                
+            }, 2000);
 
 
         }

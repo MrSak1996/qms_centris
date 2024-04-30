@@ -13,18 +13,14 @@ use App\Models\PurchaseRequestModel;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Carbon\Carbon;  
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 
-const SUBMITTED_TO_GSS = 4;
-const RECEIVED_BY_GSS = 5;
-const WITH_RFQ = 6;
-const AWARDED = 7;
-const WITH_PO = 8;
 
 class PurchaseOrderController extends Controller
 {
+
     public function generatePurchaseOrderNo($cur_year = null)
     {
         if ($cur_year === null) {
@@ -84,7 +80,7 @@ class PurchaseOrderController extends Controller
 
         PurchaseRequestModel::where('id', $req->input('pr_id'))
             ->update([
-                'stat' => WITH_PO,
+                'stat' => 8,
                 'id' => $req->input('pr_id'),
             ]);
 
@@ -97,11 +93,14 @@ class PurchaseOrderController extends Controller
     {
         $id = $req->input('id');
 
-        $result = SupplierQuotationModel::select('s.supplier_title')
-        ->leftJoin('supplier as s', 's.id', '=', 'tbl_supplier_quotation.supplier_id')
-        ->where('tbl_supplier_quotation.winner', 1)
-        ->where('tbl_supplier_quotation.rfq_id', $id)
-        ->get();
+        $result = SupplierQuotationModel::select('s.id', 's.supplier_title')
+            ->leftJoin('supplier as s', 's.id', '=', 'tbl_supplier_quotation.supplier_id')
+            ->leftJoin('tbl_abstract as a','a.rfq_id','=','tbl_supplier_quotation.rfq_id')
+            ->leftJoin('tbl_purchase_order as po','po.abstract_id','=','a.id')
+            ->where('tbl_supplier_quotation.winner', 1)
+            ->where('tbl_supplier_quotation.rfq_id', $id)
+            ->groupBy('s.id', 's.supplier_title')
+            ->get();
 
         return response()->json($result);
     }

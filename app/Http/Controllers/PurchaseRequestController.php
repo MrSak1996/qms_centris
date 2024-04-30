@@ -14,6 +14,13 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+const SUBMITTED_TO_BUDGET = 2;
+const SUBMITTED_TO_GSS = 4;
+const RECEIVED_BY_GSS = 5;
+const RECEIVED_BY_BUDGET = 3;
+const WITH_RFQ = 6;
+const AWARDED = 7;
+const WITH_PO = 8;
 class PurchaseRequestController extends Controller
 {
     public function generatePurchaseRequestNo($cur_year = 2024)
@@ -41,6 +48,7 @@ class PurchaseRequestController extends Controller
     }
     public function post_create_purchaseRequest(Request $request)
     {
+        // Create a new instance of PurchaseRequestModel
         $purchaseRequest = new PurchaseRequestModel();
 
         $purchaseRequest->pr_no = $request->input('pr_no');
@@ -49,10 +57,15 @@ class PurchaseRequestController extends Controller
         $purchaseRequest->pr_date = $request->input('pr_date');
         $purchaseRequest->target_date = $request->input('target_date');
         $purchaseRequest->purpose = $request->input('purpose');
-        $purchaseRequest->current_step = $request->input('step');
+        $purchaseRequest->action_officer = $request->input('created_by');
+
+        $purchaseRequest->stat = 1;
+
 
         $purchaseRequest->save();
 
+
+        // Return a response indicating success
         return response()->json(['message' => 'Purchase request created successfully']);
     }
 
@@ -89,7 +102,7 @@ class PurchaseRequestController extends Controller
             return response()->json([
                 'id'        => $purchaseRequest->id,
                 'pmo'         => $purchaseRequest->pmo,
-                'type'     => $purchaseRequest->type,
+                'type'        => $purchaseRequest->type,
                 'pr_date'     => $purchaseRequest->pr_date,
                 'target_date' => $purchaseRequest->target_date,
                 'purpose'     => $purchaseRequest->purpose,
@@ -101,39 +114,48 @@ class PurchaseRequestController extends Controller
     }
     public function post_insert_pritem(Request $request)
     {
-        $pr_id      = $request->input('id');
-        $pr_no      = $request->input('pr_no');
+        $pr_id      = $request->input('pr_id');
         $itemIds    = $request->input('itemIds');
-        $status     = $request->input('status');
-        $step       = $request->input('step');
         $desc       = $request->input('description');
-        $qty        = $request->input('qty');
-        $pr_opts = new PurchaseRequestItemModel([
-            'id'            => null,
-            'pr_id'         => $pr_id,
-            'pr_no'         => $pr_no,
-            'pr_item_id'    => $itemIds,
-            'step'          => $step,
-            'description'   => $desc,
-            'unit'          => null,
-            'qty'           => $qty,
-            'abc'           => null,
-            'date_added'    => null,
-            'flag'          => null,
+        $qty        = $request->input('quantity');
+        $abc        = $request->input('quantity') * $request->input('app_price');
 
-        ]);
-        $pr_opts->save();
-        // ================================
-        // Assuming your model is named PurchaseRequestModel
+        // Check if the PR ID and item ID combination already exists
+        $existingItem = PurchaseRequestItemModel::where('pr_id', $pr_id)
+            ->where('pr_item_id', $itemIds)
+            ->first();
+
+        if ($existingItem) {
+            // If the combination exists, update the quantity
+            $existingItem->qty += $qty;
+            $existingItem->abc = $existingItem->qty * $request->input('app_price'); // Corrected line
+            $existingItem->save();
+        } else {
+            // If the combination doesn't exist, insert a new record
+            $pr_opts = new PurchaseRequestItemModel([
+                'id'            => null,
+                'pr_id'         => $pr_id,
+                'pr_item_id'    => $itemIds,
+                'description'   => $desc,
+                'qty'           => $qty,
+                'abc'           => $abc,
+                'date_added'    => null,
+                'flag'          => null,
+            ]);
+            $pr_opts->save();
+        }
+
+        // Update the current step of the purchase request
         $purchaseRequest = PurchaseRequestModel::where('pr_no', $request->input('pr_no'))->first();
-
         if ($purchaseRequest) {
             $purchaseRequest->current_step = $request->input('step');
             $purchaseRequest->save();
         }
-        // You can return a response if needed
+
+        // Return a response
         return response()->json(['message' => 'Items added to the database']);
     }
+
     public function post_remove_pritem(Request $request)
     {
         $itemIds = $request->input('itemIds');
@@ -205,14 +227,15 @@ class PurchaseRequestController extends Controller
         MAX(unit.item_unit_title) AS `unit`,
         MAX(status.title) AS `status`,
         MAX(status.id) AS `status_id`,
-        SUM(app.app_price) AS `app_price`
+        sum(pr_items.qty * app.app_price) as `app_price`
         '))
             ->leftJoin('users', 'users.id', '=', 'pr.action_officer')
             ->leftJoin('pmo', 'pmo.id', '=', 'pr.pmo')
             ->leftJoin('mode_of_proc as mode', 'mode.id', '=', 'pr.type')
             ->leftJoin('pr_items', 'pr_items.pr_id', '=', 'pr.id')
-            ->leftJoin('item_unit as unit', 'unit.id', '=', 'pr_items.unit')
             ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
+            ->leftJoin('item_unit as unit', 'unit.id', '=', 'app.id')
+
             ->leftJoin('tbl_status as status', 'status.id', '=', 'pr.stat')
             ->orderBy('pr.id', 'desc')
             ->groupBy('pr.id');
@@ -229,6 +252,7 @@ class PurchaseRequestController extends Controller
         $itemsPerPage = $request->query('itemsPerPage', 500);
         $query = PurchaseRequestModel::select(PurchaseRequestModel::raw('
         pr.id AS `id`,
+        MAX(rfq.id) AS `rfq_id`,
         MAX(rfq.rfq_no) AS `rfq_no`,
         MAX(rfq.rfq_date) AS `rfq_date`,
         MAX(pr.pr_no) AS `pr_no`,
@@ -249,26 +273,31 @@ class PurchaseRequestController extends Controller
         MAX(unit.item_unit_title) AS `unit`,
         MAX(status.title) AS `status`,
         MAX(status.id) AS `status_id`,
-        SUM(app.app_price) AS `app_price`
+        sum(pr_items.qty * app.app_price) as `app_price`
+
         '))
             ->leftJoin('users', 'users.id', '=', 'pr.action_officer')
             ->leftJoin('pmo', 'pmo.id', '=', 'pr.pmo')
             ->leftJoin('mode_of_proc as mode', 'mode.id', '=', 'pr.type')
             ->leftJoin('pr_items', 'pr_items.pr_id', '=', 'pr.id')
-            ->leftJoin('item_unit as unit', 'unit.id', '=', 'pr_items.unit')
             ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
+            ->leftJoin('item_unit as unit', 'unit.id', '=', 'app.id')
             ->leftJoin('tbl_status as status', 'status.id', '=', 'pr.stat')
             ->leftJoin('tbl_rfq as rfq', 'rfq.pr_id', '=', 'pr.id')
-            ->whereIn('pr.stat', [4, 6, 7, 8]) // New where condition using IN operator
+            ->whereIn('pr.stat', [4, 5, 6, 7, 8]) // New where condition using IN operator
             ->orderBy('pr.id', 'desc')
             ->groupBy('pr.id');
 
         $prData = $query->paginate($itemsPerPage, ['*'], 'page', $page);
 
+
+
         // Dump and die to output the SQL for debugging
         // dd($prData);
         return response()->json($prData);
     }
+
+
 
     public function viewPurchaseRequest($id, Request $request)
     {
@@ -314,6 +343,34 @@ class PurchaseRequestController extends Controller
         return response()->json($app_item);
     }
 
+    public function get_app_details($id)
+    {
+        // Fetch the application item details based on the provided ID
+        $app_item = AppItemModel::select(
+            'tbl_app.id as app_id',
+            'tbl_app.sn as serial_no',
+            'tbl_app.item_title as procurement',
+            'tbl_app.app_price as app_price',
+            'unit.item_unit_title as unit',
+            'unit.id as  unit_id',
+        )
+            ->leftJoin('item_unit as unit', 'unit.id', '=', 'tbl_app.unit_id')
+            ->where('tbl_app.id', $id)
+            ->first(); // Use first() to get only one record
+
+        // Check if the item exists
+        if (!$app_item) {
+            // Return an error response if the item does not exist
+            return response()->json(['error' => 'Item not found'], 404);
+        }
+
+        // Return the application item details as JSON response
+        return response()->json($app_item);
+    }
+
+
+
+    // GENERATE REPORTS
 
 
 
@@ -373,7 +430,6 @@ class PurchaseRequestController extends Controller
 
 
 
-
     public function total_amount(Request $request)
     {
         $id = $request->input('id');
@@ -385,8 +441,8 @@ class PurchaseRequestController extends Controller
             ->leftJoin('pmo', 'pmo.id', '=', 'pr.pmo')
             ->leftJoin('mode_of_proc as mode', 'mode.id', '=', 'pr.type')
             ->leftJoin('pr_items', 'pr_items.pr_id', '=', 'pr.id')
-            ->leftJoin('item_unit as unit', 'unit.id', '=', 'pr_items.unit')
             ->leftJoin('tbl_app as app', 'app.id', '=', 'pr_items.pr_item_id')
+            ->leftJoin('item_unit as unit', 'unit.id', '=', 'app.id')
             ->leftJoin('tbl_status as status', 'status.id', '=', 'pr.stat')
             ->where('pr.id', $id)
             ->groupBy('pr.id')
@@ -435,10 +491,25 @@ class PurchaseRequestController extends Controller
     }
     public function post_update_status(Request $request)
     {
-        PurchaseRequestModel::where('id', $request->input('pr_id'))
-            ->update([
-                'stat' => $request->input('status'),
-            ]);
+        if (!is_array($request->input('pr_id')) || $request->input('status') == 2) {
+
+            PurchaseRequestModel::where('id', $request->input('pr_id'))
+                ->update([
+                    'stat' => $request->input('status'),
+                    'submitted_date_budget' => Carbon::now(), // Set 'submitted_date_budget' to current date and time
+                ]);
+        } else {
+
+            PurchaseRequestModel::whereIn('id', $request->input('pr_id'))
+                ->update([
+                    'stat' => $request->input('status'),
+                ]);
+        }
+
+        // DB::enableQueryLog();
+
+        // dd(DB::getQueryLog());
+
         return response()->json(['message' => 'Purchase Request updated successfully']);
     }
 
@@ -459,5 +530,27 @@ class PurchaseRequestController extends Controller
                 ->whereYear('date_added', 2024)
                 ->get()
         );
+    }
+
+    public function getPurchaseRequest(Request $request)
+    {
+        $query = PurchaseRequestModel::select(PurchaseRequestModel::raw('id,pr_no,purpose,submitted_date_budget'))
+            ->where('stat', SUBMITTED_TO_BUDGET);
+        $pr_opts = $query->get();
+        return response()->json($pr_opts);
+    }
+    public function post_addCode(Request $request)
+    {
+
+        // Update the record
+        PurchaseRequestModel::where('id', $request->input('id'))
+            ->update([
+                'availability_code' => $request->input('code'),
+                'stat' => RECEIVED_BY_BUDGET
+            ]);
+
+
+        // You can return a response, if needed
+        return response()->json(['message' => 'Purchase request details updated successfully']);
     }
 }

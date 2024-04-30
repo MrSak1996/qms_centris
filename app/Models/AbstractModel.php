@@ -17,8 +17,7 @@ class AbstractModel extends Model
     protected $fillable = [
         'id',
         'abstract_no',
-        'rfq_id',
-        'pr_id',
+        'rfq_no',
         'supplier_id',
         'date_created',
         'updated_at',

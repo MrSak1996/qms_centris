@@ -17,14 +17,20 @@
                                 <div class="row">
 
                                     <div class="col-lg-3 col-md-12 col-sm-12">
-                                        <div class="form-group" v-if="id == null">
+                                        <!-- <div class="form-group" v-if="id == null"> -->
+                                        <div class="form-group" v-if="rfqNo">
                                             <label>RFQ Number:</label>
+                                            <input type="text" class="form-control" :value="rfqNo" />
+                                        </div>
+                                        <div class="form-group" v-else>
+                                            <label>{{ rfqNo }}</label>
                                             <multiselect track-by="label" label="label" placeholder="Select one"
-                                                :searchable="false" v-model="rfq" :options="rfq_opt"></multiselect>
+                                                :searchable="false" v-model="rfq" :options="rfq_opt">
+                                            </multiselect>
                                         </div>
 
-                                        <TextInput v-else label="RFQ Number" iconValue="gear" style="height:40px;"
-                                            v-model="rfq_no" />
+                                        <!-- <TextInput v-else label="RFQ Number" iconValue="gear" style="height:40px;"
+                                            v-model="rfq_no" /> -->
 
 
 
@@ -101,9 +107,6 @@
 
                         <button class="btn btn-outline-primary btn-fw btn-icon-text mr-2 mb-3" @click="close()"
                             style="float:right;">Close</button>
-
-
-
                     </div>
                 </div>
             </div>
@@ -145,6 +148,7 @@ export default {
             pr_date: null,
             pmo: null,
             rfq: null,
+            rfq_no: null,
             rfq_date: null,
             supplier: null,
             app_item: null,
@@ -159,24 +163,32 @@ export default {
     mounted() {
         this.fetch_rfq();
         this.fetch_supplier();
-        if(this.id != null)
-        {
-            this.fetch_app_item_details(); // Fetch app item whenever rfq changes
-            this.fetch_app_item();
-        }else{
-
-        }
         this.generateAbstractNo();
-
-
     },
     watch: {
         rfq: {
             handler(newValue) {
                 if (newValue) {
-                    this.fetch_app_item_details(newValue); // Fetch app item whenever rfq changes
-                    this.fetch_app_item(newValue); // Fetch app item whenever rfq changes
+                    this.fetch_app_item_details(newValue);
+                    this.fetch_app_item(newValue);
+                    this.rfq_no = newValue.label; // Fetch app item whenever rfq changes
                 }
+            },
+            immediate: true
+        },
+        rfqNo: {
+            handler(newVal, oldVal) {
+                let req = null;
+                req = {
+                    id: newVal
+                }
+                axios.post(`../../api/fetch_app_item`, req)
+                    .then(response => {
+                        this.appItems = response.data; // Update appItems with fetched data
+                    })
+                    .catch(error => {
+                        console.error('Error fetching app item:', error);
+                    });
             },
             immediate: true
         }
@@ -191,6 +203,7 @@ export default {
                 const response = await axios.get('../../api/fetch_rfq');
                 // Assuming response.data is an array of objects with 'label' and 'value' properties
                 this.rfq_opt = response.data.map(item => ({ label: item.rfq_no, value: item.id }))
+
             } catch (error) {
                 console.error('Error fetching submitted purchase requests:', error);
             }
@@ -206,7 +219,7 @@ export default {
         },
 
         fetch_app_item_details(rfqId) {
-            let requestData =null 
+            let requestData = null
 
             if (this.id == null) {
                 requestData = {
@@ -237,16 +250,10 @@ export default {
                 });
         },
         fetch_app_item(rfqId) {
-            let requestData = null
-            if (this.id == null) {
-                requestData = {
-                    id: rfqId.value
-                };
-            } else {
-                requestData = {
-                    id: this.$route.query.id
-                };
-            }
+            let requestData = null;
+            requestData = {
+                id: rfqId.label
+            };
 
 
             axios.post(`../../api/fetch_app_item`, requestData)
@@ -289,8 +296,7 @@ export default {
             // Send data to backend
             axios.post(`../../api/post_create_abstract`, {
                 abstract_no: this.abstract_no,
-                rfq_id: this.rfq.value,
-                pr_id: this.pr_id,
+                rfq_no: this.rfq.label,
                 date_created: this.date_created
             })
                 .then(response => {
@@ -302,20 +308,24 @@ export default {
 
         },
         saveData() {
+
             let rfqId = null;
+            let rfq_no = null;
             if (this.id == null) {
                 this.saveAbsract();
                 rfqId = this.rfq.value;
-            }else{
+                rfq_no = this.rfq.label;
+            } else {
                 rfqId = this.id;
 
             }
-            
-        
+
+
             // Prepare data for saving
             const dataToSave = this.appItems.map(item => ({
                 supplier_id: this.supplier.value,
                 rfq_id: rfqId,
+                rfq_no: this.rfqNo ? this.rfqNo : this.rfq_no,
                 pr_id: item.id,
                 date_created: this.date_created,
                 item_id: item.pr_item_id, // Assuming item.id is the ID of the app_item

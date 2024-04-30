@@ -1,4 +1,12 @@
 <style>
+th, td {
+    padding: 8px; /* Optional: Add padding for better spacing */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Display ellipsis (...) for overflowed text */
+    max-width: 300px; /* Maximum width of cells */
+  }
+  
 .profile_img {
     width: 100px;
     height: 100px;
@@ -105,7 +113,7 @@
                                                     <th>Purchase Request No.</th>
                                                     <th>Request for Quotation No.</th>
                                                     <th>Total Amount</th>
-                                                    <th>Purpose</th>
+                                                    <th style="width: 10px !important;">Particulars</th>
                                                     <th>Purchase Date</th>
                                                     <th>Target Date</th>
                                                     <th>Status</th>
@@ -131,9 +139,9 @@
                                                             <button type="button" class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
                                                                 <i class="ti-trash" style="margin-left: -3px;"></i>
                                                             </button>
-                                                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;">
+                                                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;" @click="exportRFQ(purchaseRequest.rfq_no)">
                                                                 <i class="ti-download"
-                                                                    @click="exportPurchaseRequest(purchaseRequest.id)"
+                                                                    
                                                                     style="margin-left: -3px;"></i>
                                                             </button>
                                                         </div>
@@ -151,9 +159,9 @@
                                                                 <i class="ti-trash" style="margin-left: -3px;"></i>
 
                                                             </button>
-                                                            <button class="btn btn-warning btn-rounded btn-icon">
+                                                            <button class="btn btn-warning btn-rounded btn-icon"  @click="exportRFQ(purchaseRequest.rfq_no)">
                                                                 <i class="ti-download"
-                                                                    @click="exportPurchaseRequest(purchaseRequest.id)"
+                                                                   
                                                                     style="margin-left: -3px;"></i>
                                                             </button>
                                                         </div>
@@ -193,7 +201,7 @@
 
 
                                                     <td>Php. {{ formatAmount(purchaseRequest.app_price) }}</td>
-                                                    <td>{{ purchaseRequest.particulars }}</td>
+                                                    <td style="width: 10px !important;">{{ purchaseRequest.particulars }}</td>
                                                     <td>{{ purchaseRequest.pr_date }}</td>
                                                     <td>{{ purchaseRequest.target_date }}</td>
                                                     <td>
@@ -357,7 +365,6 @@ export default {
             axios.post(`../../api/fetchSubmittedtoGSS`)
                 .then(response => {
                     this.purchaseRequests = response.data.data;
-
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -373,20 +380,21 @@ export default {
 
 
         },
-        exportPurchaseRequest(pr_id) {
-            window.location.href = `../../api/export-purchase-request/${pr_id}?export=true`;
+        exportRFQ(rfq_id) {
+            // console.log(rfq_id);
+            window.location.href = `../../api/export-rfq/${rfq_id}?export=true`;
         },
         toGSS(id) {
-            const STATUS_SUBMITTED_TO_GSS = 4;
+            const STATUS_RECEIVED_BY_GSS = 5;
             axios.post(`../../api/post_update_status`, {
                 pr_id: id,
-                status: STATUS_SUBMITTED_TO_GSS,
+                status: STATUS_RECEIVED_BY_GSS,
             }
             ).then(() => {
                 toast.success('Successfully submitted to the GSS!', {
                     autoClose: 2000
                 });
-                location.reload();
+                // location.reload();
             }).catch((error) => {
 
             })

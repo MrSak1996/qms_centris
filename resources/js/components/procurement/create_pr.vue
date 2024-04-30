@@ -476,6 +476,7 @@ select {
                         <option v-for="option in pmo" :key="option.value" :value="option.value">{{ option.label }}
                         </option>
                       </SelectInput>
+                      
 
                     </div>
                     <div class="col-lg-3">
@@ -485,18 +486,19 @@ select {
                       </SelectInput>
                     </div>
                     <div class="col-lg-3">
-                      <TextInput class="date-option" label="PR Date" iconValue="circle-question"
-                        type="datetime-local" />
+                      <TextInput class="date-option" v-model="prData.pr_date" label="PR Date"
+                        iconValue="circle-question" type="date" />
                     </div>
                     <div class="col-lg-3">
-                      <TextInput class="date-option" label="Target Date" iconValue="circle-question"
-                        type="datetime-local" />
+                      <TextInput class="date-option" v-model="prData.target_date" label="Target Date"
+                        iconValue="circle-question" type="date" />
                     </div>
                     <div class="col-lg-12 mt-4">
-                      <TextAreaInput label="Particulars" />
+                      <TextAreaInput label="Particulars" v-model="prData.particulars" />
                     </div>
                     <div class="col-lg-12">
-                      <button class="btn btn-outline-primary" style="float:right;">Create</button>
+                      <button class="btn btn-outline-primary" style="float:right;"
+                        @click="post_create_pr();">Create</button>
                     </div>
                   </div>
 
@@ -533,10 +535,12 @@ import SelectInput from "../micro/SelectInput.vue";
 library.add(faCircleInfo, faList, faCircleCheck, faEye, faLayerGroup, faPesoSign, faQuestionCircle);
 
 export default {
+  name: 'create_pr',
   data() {
     return {
       modalVisible: false,
       purchase_no: null,
+      purchase_id: null,
       prData: {
         pmo: null,
         pr_type: null,
@@ -545,10 +549,15 @@ export default {
         particulars: null
       },
       pmo: [
-        { value: '1', label: 'ORD' },
-        { value: '2', label: 'FAD' },
-        { value: '3', label: 'LGMED' },
-        { value: '4', label: 'LGCDD' },
+        { value: '15', label: 'ORD' },
+        { value: '1', label: 'ORD-Legal' },
+        { value: '2', label: 'ORD-Planning' },
+        { value: '3', label: 'LGMED-MBRTG' },
+        { value: '4', label: 'LGCDD-PDMU' },
+        { value: '5', label: 'FAD' },
+        { value: '6', label: 'ORD-RICTU' },
+        { value: '7', label: 'LGCDD' },
+        { value: '8', label: 'LGMED' },
       ],
       pr_type: [
         { value: '1', label: 'Catering Services' },
@@ -581,41 +590,37 @@ export default {
         const purchaseNoFromApi = response.data[0].pr_count;
         const formattedSequence = purchaseNoFromApi.toString().padStart(5, '0');
 
-        // set the draft pr no of the user
         if (this.$route.query.pr_no) {
           this.purchase_no = this.$route.query.pr_no;
         } else {
           this.purchase_no = `${purchaseNoFormat}-${formattedSequence}`;
         }
-        // localStorage.setItem('prId', response.data.userId);
-
-        //this.fetchCartDetails();
-        // this.fetchPurchaseRequestDetails();
+        this.purchase_id = response.data[0].pr_count;
       } catch (error) {
         console.error('Error fetching data', error);
       }
     },
-    updatePurchaseRequestDetails() {
-      axios.post('/api/post_update_purchaseRequestDetails', {
+    post_create_pr() {
+      axios.post('/api/post_create_purchaseRequest', {
+        created_by: this.userId,
         pr_no: this.purchase_no,
         pmo: this.prData.pmo,
         type: this.prData.pr_type,
         pr_date: this.prData.pr_date,
         target_date: this.prData.target_date,
         purpose: this.prData.particulars
-
       }
       ).then(() => {
-
+        const purchaseId = this.purchase_id; // Assuming your API returns the inserted purchase ID
+        console.log(purchaseId);
         toast.success('Successfully added!', {
-          autoClose: 100
+          autoClose: 1000
         });
-
-
-
+        setTimeout(() => {
+          this.$router.push({ path: `/procurement/select_purchase_item/${purchaseId}` });
+        }, 1000);
 
       }).catch((error) => {
-
       })
     },
     openModal() {

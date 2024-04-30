@@ -12,6 +12,8 @@ import AddAppItem from "../components/procurement/add_app_item.vue";
 import CreatePRItem from "../components/procurement/create_pr.vue"
 import ViewPRItem from "../components/procurement/view_pr.vue";
 import UpdatePRItem from "../components/procurement/update_pr.vue";
+import SelectAPPItem from "../components/procurement/select_item.vue";
+import AddAPPDetails from "../components/procurement/add_item_details.vue";
 
 // Statistics
 import procurement_stat from "../components/procurement/procurement_stat.vue";
@@ -28,6 +30,10 @@ import quotation from "../components/procurement/abstract/panel/quotation.vue";
 
 // PURCHASE ORDER
 import create_po from "../components/procurement/purchase-order/panel/create.vue";
+
+//Budget
+import budget_fundsource from "../components/budget/fundsource/index.vue";
+import budget_obligation from "../components/budget/obligation/index.vue";
 
 //HR Section
 import employees_directory from "../components/human_resource/employees_directory/index.vue";
@@ -81,6 +87,11 @@ const routes = [
         component: CreatePRItem,
     },
     {
+        path: '/procurement/select_purchase_item/:id',
+        name: 'Add APP Item',
+        component: SelectAPPItem,
+    },
+    {
         path: '/procurement/update_pr',
         name: 'update_pr',
         component: UpdatePRItem,
@@ -109,6 +120,11 @@ const routes = [
         path: '/procurement/view_pr/:id',
         name: 'View Purchase Request Item',
         component: ViewPRItem,
+    },
+    {
+        path: '/procurement/add_app_details',
+        name: 'Add Item Details',
+        component: AddAPPDetails
     },
     {
         path: '/procurement/statistic',
@@ -165,6 +181,16 @@ const routes = [
         path:'/rictu/ict_ta/:id',
         name:'View ICT Form',
         component:view_ict
+    },
+    {
+        path:'/budget/fundsource',
+        name:'Fund Source',
+        component:budget_fundsource
+    },
+    {
+        path:'/budget/obligation',
+        name:'Obligation',
+        component:budget_obligation
     },
     {
         path:'/human_resource/employees_directory/index',

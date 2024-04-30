@@ -42,8 +42,9 @@
                                                 :icon="['fas', 'list']"></font-awesome-icon>&nbsp;Abstract of Quotation
                                         </h5>
                                         <div class="d-flex">
-                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2" @click="openModal()">
-                                              Create Abstract
+                                            <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2"
+                                                @click="openModal()">
+                                                Create Abstract
                                             </button>
                                             <button class="btn btn-outline-primary btn-fw btn-icon-text mx-2"
                                                 @click="toggleCard()">
@@ -55,22 +56,19 @@
                                         <table class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>Actions</th>
+                                                    <th style="max-width: 30px;">Actions</th>
                                                     <th>Status</th>
                                                     <th>Purchase Request No.</th>
                                                     <th>Request For Quotation</th>
                                                     <th>Abstract No.</th>
                                                     <th>Purchase Order</th>
-                                                    <th>Purchase Order Amount</th>
+                                                    <th style="max-width: 100px;">P.O Amount</th>
                                                     <th>Office</th>
-                                                    <th>Date Received</th>
-                                                    <th>Abstract Date</th>
-                                                    <th>Received By</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="abstract_data in displayedItems" :key="abstract_data.id">
-                                                    <td style="width: 20%;">
+                                                    <td style="width: 10%;">
                                                         <button class="btn btn-icon mr-1"
                                                             style="background-color:#059886;color:#fff;">
                                                             <font-awesome-icon
@@ -83,36 +81,30 @@
                                                                 :icon="['fas', 'eye']"></font-awesome-icon>
 
                                                         </button>
-                                                        <button class="btn btn-icon mr-1"
+                                                        <button class="btn btn-icon mr-1" @click="exportAbstract(abstract_data.rfq_id)"
                                                             style="background-color:#059886;color:#fff;">
                                                             <font-awesome-icon
-                                                                :icon="['fas', 'layer-group']"></font-awesome-icon>
+                                                                :icon="['fas', 'download']"></font-awesome-icon>
 
                                                         </button>
                                                     </td>
-                                                    <td class="font-weight-bold">
+                                                    <td >
                                                         <div class="badge badge-success">{{ abstract_data.status }}
                                                         </div>
 
                                                     </td>
-                                                    <td class="font-weight-bold">{{ abstract_data.pr_no }}</td>
-                                                    <td class="font-weight-bold">{{ abstract_data.rfq_no }}</td>
-                                                    <td class="font-weight-medium">
-                                                        {{ abstract_data.abstract_no }}
+                                                    
+                                                    <td >
+                                                        {{ abstract_data.pr_no }}<br><i>~{{ abstract_data.office }}~</i>
+
                                                     </td>
-                                                    <td v-if="abstract_data.po_no" class="font-weight-bold">
-                                                        {{ abstract_data.po_no }}
-                                                    </td>
-                                                    <td v-else>
-                                                        <div class="badge badge-success"
-                                                            @click="create_po(abstract_data.rfq_id)">Create P.O</div>
-                                                    </td>
-                                                    <td><font-awesome-icon :icon="['fas', 'peso-sign']" /> {{
-                                this.$formatTotalAmount(abstract_data.po_amount) }}</td>
+                                                    <td >{{ abstract_data.rfq_no }}</td>
+                                                    <td> {{ abstract_data.abstract_no }} </td>
+                                                    <td v-if="abstract_data.po_no" > {{ abstract_data.po_no }} </td>
+                                                    <td v-else> <div class="badge badge-success" @click="create_po(abstract_data.rfq_id)">Create P.O</div> </td>
+                                                    <td style="width: 100px;">
+                                                        <font-awesome-icon :icon="['fas', 'peso-sign']" /> {{ this.$formatTotalAmount(abstract_data.po_amount) }}</td>
                                                     <td>{{ abstract_data.office }}</td>
-                                                    <td></td>
-                                                    <td>{{ abstract_data.abstract_date }}</td>
-                                                    <td></td>
                                                 </tr>
 
 
@@ -149,10 +141,10 @@ import AbstractInfo from "./panel/abstract_info.vue";
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core'; // Import the library object
-import { faCircleCheck, faCircleInfo, faEye, faLayerGroup, faList, faPesoSign } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faCircleInfo, faDownload, faEye, faLayerGroup, faList, faPesoSign } from '@fortawesome/free-solid-svg-icons';
 
 
-library.add(faCircleInfo, faList, faCircleCheck, faEye, faLayerGroup, faPesoSign);
+library.add(faCircleInfo, faList, faCircleCheck, faEye, faLayerGroup, faPesoSign,faDownload);
 
 export default {
     name: 'Abstract of Quotation',
@@ -176,7 +168,7 @@ export default {
         Pagination,
         FontAwesomeIcon,
         SelectSupplierModal,
-    AbstractInfo,
+        AbstractInfo,
         StatBox
     },
     computed: {
@@ -194,7 +186,9 @@ export default {
         this.load_abstract_data();
     },
     methods: {
-
+        exportAbstract(rfq_id) {
+            window.location.href = `../../api/export-abstract/${rfq_id}?export=true`;
+        },
         create_po(id) {
             this.$router.push({ path: '/procurement/purchase-order/create', query: { id: id } });
         },

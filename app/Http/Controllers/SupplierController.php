@@ -17,6 +17,21 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class SupplierController extends Controller
 {
+    public function getPurchaseOrder()
+    {
+
+        $result = DB::table('tbl_supplier_quotation')
+        ->select('s.id', 's.supplier_title', 'po.po_no', DB::raw('SUM(tbl_supplier_quotation.quotation) AS total_quotation'))
+        ->leftJoin('supplier as s', 's.id', '=', 'tbl_supplier_quotation.supplier_id')
+        ->leftJoin('tbl_abstract as a', 'a.rfq_id', '=', 'tbl_supplier_quotation.rfq_id')
+        ->leftJoin('tbl_purchase_order as po', 'po.abstract_id', '=', 'a.id')
+        ->where('tbl_supplier_quotation.winner', 1)
+        ->groupBy('s.id', 's.supplier_title', 'po.po_no')
+        ->get();
+        return response()->json($result);
+    }
+
+
     public function fetch_supplier()
     {
         return response()->json(
@@ -27,11 +42,12 @@ class SupplierController extends Controller
     public function fetch_app_item(Request $req)
     {
         $id = $req->input('id');
+        
         $query = RFQModel::select('a.item_title', 'a.app_price', 'pi.qty', 'pi.pr_item_id')
             ->leftJoin('pr as p', 'p.id', '=', 'tbl_rfq.pr_id')
             ->leftJoin('pr_items as pi', 'pi.pr_id', '=', 'p.id')
             ->leftJoin('tbl_app as a', 'a.id', '=', 'pi.pr_item_id')
-            ->where('tbl_rfq.id', '=', $id)
+            ->where('tbl_rfq.rfq_no', '=', $id)
             ->get();
         // dd($query->toSql());
 
@@ -47,6 +63,7 @@ class SupplierController extends Controller
             ->selectRaw(
                 'MAX(p.id) as id,
                 MAX(p.pr_no) as pr_no,
+                MAX(tbl_rfq.id) as rfq_id,
                 MAX(tbl_rfq.rfq_no) as rfq_no,
                 MAX(aa.abstract_no) as abstract_no,
                 MAX(aa.date_created) as abstract_date,
@@ -59,6 +76,9 @@ class SupplierController extends Controller
                 MAX(pi.qty) as qty,
                 MAX(pi.pr_item_id) as pr_item_id,
                 MAX(p.stat) as current_status,
+                MAX(po.po_no) as po_no,
+                MAX(po.po_date) as po_date,
+                MAX(po.po_amount) as po_amount,
                 SUM(a.app_price * pi.qty) as total_abc'
             )
             ->from('pr as p')
@@ -75,7 +95,10 @@ class SupplierController extends Controller
                 $join->on('pmo.id', '=', 'p.pmo');
             })
             ->join('tbl_abstract as aa', function ($join) {
-                $join->on('aa.rfq_id', '=', 'tbl_rfq.id');
+                $join->on('aa.rfq_no', '=', 'tbl_rfq.rfq_no');
+            })
+            ->join('tbl_purchase_order as po', function ($join) {
+                $join->on('po.abstract_id', '=', 'aa.id');
             })
             ->where(function ($query) use ($id) {
                 $query->where('tbl_rfq.id', '=', $id)
@@ -102,14 +125,15 @@ class SupplierController extends Controller
     }
     public function fetch_supplier_quotation(Request $req)
     {
-        $id = $req->input('id');
-        $query = SupplierQuotationModel::select('s.supplier_title', 'a.item_title', 'a.app_price', 'tbl_supplier_quotation.quotation', 'tbl_supplier_quotation.winner')
+        $id = $req->input('id');    
+    
+        $query = SupplierQuotationModel::select('a.id','s.supplier_title', 'a.item_title', 'a.app_price', 'tbl_supplier_quotation.quotation', 'tbl_supplier_quotation.winner')
             ->leftJoin('supplier as s', 's.id', '=', 'tbl_supplier_quotation.supplier_id')
-            ->leftJoin('tbl_rfq as r', 'r.id', '=', 'tbl_supplier_quotation.rfq_id')
+            ->leftJoin('tbl_rfq as r', 'r.rfq_no', '=', 'tbl_supplier_quotation.rfq_no')
             ->leftJoin('tbl_app as a', 'a.id', '=', 'tbl_supplier_quotation.item_id')
-            ->where('r.id', '=', $id)
+            ->where('r.rfq_no', '=', $id)
+            ->groupBy('a.id','s.supplier_title', 'a.item_title', 'a.app_price', 'tbl_supplier_quotation.quotation', 'tbl_supplier_quotation.winner')
             ->orderby('tbl_supplier_quotation.item_id','asc')
-
             ->get();
         // dd($query->toSql());
 
@@ -126,6 +150,7 @@ class SupplierController extends Controller
 
             // Assign values to model properties
             $supplierQuotation->supplier_id = $item['supplier_id'];
+            $supplierQuotation->rfq_no      = $item['rfq_no'];
             $supplierQuotation->rfq_id      = $item['rfq_id'];
             $supplierQuotation->item_id     = $item['item_id'];
             $supplierQuotation->quotation   = $item['quotation'];

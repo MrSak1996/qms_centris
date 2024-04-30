@@ -292,7 +292,6 @@ export default {
         },
         create_ict_ta() {
             const userId = localStorage.getItem('userId');
-            console.log(this.userData.requested_date);
             this.$fetchUserData(userId, '../../../../api/fetchUser')
                 .then(emp_data => {
                     axios.post('/api/post_create_ict_request', {

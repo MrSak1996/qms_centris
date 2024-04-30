@@ -795,11 +795,6 @@ export default {
     // this.fetchAppData();
     this.generatePurchaseRequestNo();
     this.fetchAppItem();
-    
-   
-    
-
-
   },
 
   methods: {
@@ -840,9 +835,9 @@ export default {
 
                
             }).catch((error) => { console.error("Error fetching data:", error); });
-      });
+  });
       
-    },
+      },
     backStep() {
       if (this.formnumber > 0) {
         this.formnumber--;
