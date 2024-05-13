@@ -80,7 +80,9 @@ class RFQController extends Controller
         MAX(pr.id) as `pr_id`,
         MAX(tbl_rfq.id) as `rfq_id`,
         MAX(tbl_rfq.rfq_no) as `rfq_no`,
-        MAX(tbl_rfq.rfq_date) as `rfq_date`,
+        MAX(tbl_rfq.particulars) as `particulars`,
+        MAX(DATE_FORMAT(tbl_rfq.rfq_date, "%M %d, %Y")) as `rfq_date`,
+        MAX(DATE_FORMAT(tbl_rfq.created_at, "%M %d, %Y")) as `received_date`,
         MAX(tbl_app.sn) as `serial_no`,
         MAX(tbl_app.item_title) as `item_title`,
         MAX(tbl_app.app_price) as `abc`,
@@ -97,7 +99,7 @@ class RFQController extends Controller
             ->leftJoin('tbl_app', 'tbl_app.id', '=', 'pr_items.pr_item_id')
             ->leftJoin('item_unit as unit', 'unit.id', '=', 'tbl_app.unit_id')
             ->leftJoin('pmo', 'pmo.id', '=', 'pr.pmo')
-            ->where('tbl_rfq.rfq_no', $id)
+            ->where('tbl_rfq.id', $id)
             ->groupBy('tbl_rfq.id');
 
 
@@ -115,6 +117,33 @@ class RFQController extends Controller
 
         return response()->json($app_item);
     }
+    public function getPRItems($id, Request $request)
+    {
+
+        $query = AppItemModel::select(AppItemModel::raw('
+        tbl_app.id as `app_id`,
+        tbl_app.sn as `serial_no`,
+        tbl_app.item_title as `procurement`,
+        tbl_app.app_price as `app_price`,
+        unit.item_unit_title as `unit`,
+        pr_items.description as `description`,
+        pr_items.qty as `quantity`,
+        pr_items.qty * tbl_app.app_price as `total`,
+        pr.pr_no as `pr_no`,
+        pmo.pmo_title as `office`,
+        '))
+            ->leftJoin('pr_items', 'pr_items.pr_item_id', '=', 'tbl_app.id')
+            ->leftJoin('item_unit as unit', 'unit.id', '=', 'tbl_app.unit_id')
+            ->leftJoin('pr', 'pr.id', '=', 'pr_items.pr_id')
+            ->leftJoin('pmo', 'pmo.id', '=', 'pr.pmo')
+            ->leftJoin('tbl_status', 'pr.stat', '=', 'tbl_status.id')
+            ->where('pr.id', $id);
+
+
+        $app_item = $query->get();
+        return response()->json($app_item);
+    }
+    
 
     private function exportToExcel($data)
     {

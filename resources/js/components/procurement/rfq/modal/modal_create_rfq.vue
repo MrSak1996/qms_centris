@@ -121,6 +121,9 @@ export default {
             toast.success('RFQ successfully created!', {
               autoClose: 100
             });
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
 
           })
           .catch(error => {

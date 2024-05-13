@@ -147,7 +147,7 @@ export default {
         ModalCode
     },
     mounted() {
-        // this.fetch_pr_submitted();
+        this.fetch_pr_submitted();
         this.fetch_po_created();
     },
     methods: {

@@ -7,6 +7,7 @@ use App\Http\Controllers\RFQController;
 use App\Http\Controllers\RICTUController;
 use App\Http\Controllers\CRUDController;
 use App\Http\Controllers\AbstractController;
+use App\Http\Controllers\HRSController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
 
@@ -32,9 +33,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->get('/authenticated', function () {
-    return true;
+Route::middleware('auth:api')->group(function () {
+    // // Protected routes here
+    // Route::get('/authenticated', function (Request $request) {
+    //     return response()->json(['authenticated' => true]);
+    // });
+    
+    // // Other protected routes...
 });
+Route::get('/authenticated', function (Request $request) {
+    return response()->json(['authenticated' => auth()->check()]);
+});
+
+
+
 Route::middleware('api')->group(function () {
     Route::get('fetchAppData', [AppItemController::class, 'fetchAppData']);
 });
@@ -123,6 +135,10 @@ Route::middleware('api')->group(function () {
 });
 
 Route::middleware('api')->group(function () {
+    Route::get('getActiveAccounts', [HRSController::class,'getActiveAccounts']);
+});
+
+Route::middleware('api')->group(function () {
     Route::get('countCancelledPR/{userId}', [PurchaseRequestController::class, 'countCancelledPR']);
 });
 
@@ -158,8 +174,15 @@ Route::middleware('api')->group(function () {
 
 
 
-
+Route::post('logout', function (Request $request) {
+    $request->user()->token()->revoke(); // Revoke the user's access token
+    // Clear any other cached data or session information if necessary
+    return response()->json(['message' => 'Successfully logged out']);
+})->middleware('auth:api');
 Route::post('login',[UserController::class,'login']);
+// Route::post('logout',[UserController::class,'logout']);
+
+
 Route::post('post_add_appItem',[AppItemController::class,'post_add_appItem']);
 Route::post('post_create_ict_request',[RICTUController::class,'post_create_ict_request']);
 Route::post('post_update_cart',[PurchaseRequestController::class,'post_update_cart']);

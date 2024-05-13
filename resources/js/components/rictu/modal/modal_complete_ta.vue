@@ -15,21 +15,21 @@
                                 <div class="row">
 
                                     <div class="col-lg-6">
-                                        <TextInput label="Control Number" iconValue="hashtag" :value="control_no" />
+                                        <TextInput label="Control Number" iconValue="hashtag" :value="control_no" disabled/>
                                     </div>
                                     <div class="col-lg-6">
-                                        <TextInput label="Requested By" iconValue="user" :value="requested_by" />
+                                        <TextInput label="Requested By" iconValue="user" :value="requested_by" disabled/>
                                     </div>
                                     <div class="col-lg-6">
-                                        <TextInput type="date" label="Request Date" :value="request_date"
-                                            iconValue="calendar" style="height: 40px;" />
+                                        <TextInput type="text" label="Request Date" :value="formatDate(request_date)"
+                                            iconValue="calendar" style="height: 40px;" disabled />
                                     </div>
                                     <div class="col-lg-6 mb-2">
                                         <TextInput type="datetime-local" label="Completed Date" iconValue="calendar"
                                             v-model="completed_date" style="height: 40px;" />
                                     </div>
                                 </div>
-                                <TextInput label="Office" iconValue="building" :value="office" />
+                                <TextInput label="Office" iconValue="building" :value="office"  disabled/>
 
                                 <TextInput label="Type of Request" iconValue="gear" :value="request_type" />
 
@@ -81,6 +81,19 @@ export default {
         TextAreaInput
     },
     methods: {
+        formatDate(date) {
+            if (!date || date === '0000-00-00') {
+                return null; // Return null if the date is null or '0000-00-00'
+            } else {
+                const formattedDate = new Date(date).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+
+                });
+                return formattedDate;
+            }
+        },
         close() {
             this.$emit('close');
         },

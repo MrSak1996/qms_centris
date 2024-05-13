@@ -55,15 +55,43 @@ th {
             <tbody>
                 <tr v-for="ict_data in displayedItems" :key="ict_data.id">
                     <td>
-                        <button class="btn    btn-icon mr-1" style="background-color:#059886;color:#fff;"
-                            @click="received_request(ict_data.id)"><font-awesome-icon
-                                :icon="['fas', 'circle-check']"></font-awesome-icon></button>
-                        <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
-                            @click="view_ict_form(ict_data.id)"><font-awesome-icon
-                                :icon="['fas', 'eye']"></font-awesome-icon></button>
-                        <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
-                            @click="openModal(ict_data.id)"><font-awesome-icon
-                                :icon="['fas', 'layer-group']"></font-awesome-icon></button>
+                        <div v-if="ict_data.status === 'Received'">
+                            <!-- Render buttons for viewing and opening modal -->
+                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
+                                @click="view_ict_form(ict_data.id)">
+                                <font-awesome-icon :icon="['fas', 'eye']"></font-awesome-icon>
+                            </button>
+                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
+                                @click="openModal(ict_data.id)">
+                                <font-awesome-icon :icon="['fas', 'layer-group']"></font-awesome-icon>
+                            </button>
+                        </div>
+                        <div v-else-if="ict_data.status === 'Completed'">
+                            <!-- Render buttons for viewing and opening modal -->
+                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
+                                @click="view_ict_form(ict_data.id)">
+                                <font-awesome-icon :icon="['fas', 'eye']"></font-awesome-icon>
+                            </button>
+                        </div>
+                        <div v-else>
+                            <!-- Render button for marking as received -->
+                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
+                                @click="received_request(ict_data.id)">
+                                <font-awesome-icon :icon="['fas', 'circle-check']"></font-awesome-icon>
+                            </button>
+                            <!-- Render buttons for viewing and opening modal -->
+                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
+                                @click="view_ict_form(ict_data.id)">
+                                <font-awesome-icon :icon="['fas', 'eye']"></font-awesome-icon>
+                            </button>
+                            <button class="btn btn-icon mr-1" style="background-color:#059886;color:#fff;"
+                                @click="openModal(ict_data.id)">
+                                <font-awesome-icon :icon="['fas', 'layer-group']"></font-awesome-icon>
+                            </button>
+                        </div>
+                        
+                       
+                       
                     </td>
                     <td>{{ ict_data.status }}</td>
                     <td><b>R4A-{{ ict_data.control_no }}</b><br><i>~Request Date: {{ formatDate(ict_data.requested_date)
@@ -127,7 +155,7 @@ export default {
         return {
             ict_data: [],
             currentPage: 1,
-            itemsPerPage: 5,
+            itemsPerPage: 10,
             modalVisible: false,
             selected_id: null,
 
@@ -240,9 +268,7 @@ export default {
                 toast.success('Success! This request has been received!', {
                     autoClose: 2000
                 });
-                setTimeout(() => {
-                    location.reload();
-                }, 2000); // Adjust the delay as needed
+           this.load_ict_request();
 
             }).catch((error) => {
 

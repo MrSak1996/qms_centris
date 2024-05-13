@@ -160,6 +160,20 @@ const formatDecimal = function (value) {
 
 }
 
+const formatDate= function (date) {
+    if (!date || date === '0000-00-00') {
+        return null; // Return null if the date is null or '0000-00-00'
+    } else {
+        const formattedDate = new Date(date).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+
+        });
+        return formattedDate;
+    }
+}
+
 
 
 
@@ -177,5 +191,6 @@ export {
     formatTotalAmount,
     updatePurchaseRequestStatus,
     fetchICTData,
-    formatDecimal
+    formatDecimal,
+    formatDate
 };

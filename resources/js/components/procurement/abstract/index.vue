@@ -12,6 +12,9 @@
     background-color: #059886;
     color: #fff;
 }
+td{
+    text-align: center;
+}
 </style>x
 
 <template>
@@ -56,14 +59,15 @@
                                         <table class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th style="max-width: 30px;">Actions</th>
-                                                    <th>Status</th>
-                                                    <th>Purchase Request No.</th>
-                                                    <th>Request For Quotation</th>
-                                                    <th>Abstract No.</th>
-                                                    <th>Purchase Order</th>
-                                                    <th style="max-width: 100px;">P.O Amount</th>
-                                                    <th>Office</th>
+                                                    <th style="max-width: 30px;">ACTIONS</th>
+                                                    <th>STATUS</th>
+                                                    <th>PURCHASE REQUEST #</th>
+                                                    <th>REQUEST FOR QUOTATION #</th>
+                                                    <th>ABSTRACT #</th>
+                                                    <th>PURCHASE ORDER</th>
+                                                    <th style="max-width: 100px;">P.O AMOUNT</th>
+                                                    <th>OFFICE</th>
+                                                    
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -91,16 +95,15 @@
                                                     <td >
                                                         <div class="badge badge-success">{{ abstract_data.status }}
                                                         </div>
-
                                                     </td>
                                                     
                                                     <td >
-                                                        {{ abstract_data.pr_no }}<br><i>~{{ abstract_data.office }}~</i>
+                                                        <b>{{ abstract_data.pr_no }}</b><br>~ PR Date: {{ abstract_data.pr_date }}~
 
                                                     </td>
-                                                    <td >{{ abstract_data.rfq_no }}</td>
-                                                    <td> {{ abstract_data.abstract_no }} </td>
-                                                    <td v-if="abstract_data.po_no" > {{ abstract_data.po_no }} </td>
+                                                    <td > <b>{{ abstract_data.rfq_no }}</b><br> ~ RFQ Date: {{abstract_data.rfq_date}} ~</td>
+                                                    <td > <b>{{ abstract_data.abstract_no }}</b><br> ~ Astract Date: {{abstract_data.abstract_date}} ~</td>
+                                                    <td v-if="abstract_data.po_no" > <b>{{ abstract_data.po_no }}</b><br> ~ Purchase Order Date: {{abstract_data.po_date}} ~ </td>
                                                     <td v-else> <div class="badge badge-success" @click="create_po(abstract_data.rfq_id)">Create P.O</div> </td>
                                                     <td style="width: 100px;">
                                                         <font-awesome-icon :icon="['fas', 'peso-sign']" /> {{ this.$formatTotalAmount(abstract_data.po_amount) }}</td>

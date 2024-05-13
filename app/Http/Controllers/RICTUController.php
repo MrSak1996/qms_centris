@@ -41,32 +41,31 @@ class RICTUController extends Controller
         $page = $request->query('page');
         $itemsPerPage = $request->query('itemsPerPage', 500);
 
-        $ictQuery = RICTUModel::select([
-            DB::raw('MAX(tbl_technicalassistance.id) as id'),
-            DB::raw('MAX(tbl_technicalassistance.control_no) as control_no'),
-            DB::raw('MAX(u.name) as requested_by'),
-            DB::raw('MAX(tbl_technicalassistance.request_date) as requested_date'),
-            DB::raw('MAX(tbl_technicalassistance.received_date) as received_date'),
-            DB::raw('MAX(tbl_technicalassistance.completed_date) as completed_date'),
-            DB::raw('MAX(tbl_technicalassistance.remarks) as remarks'),
-            DB::raw('MAX(cl.link) as css_link'),
-            DB::raw('MAX(p.pmo_title) as office'),
-            DB::raw('MAX(itr.request_type) as request_type'),
-            DB::raw('MAX(c.TITLE) as sub_request_type'),
-            DB::raw('MAX(ip.ict_personnel) as ict_personnel'),
-            DB::raw('MAX(is.status) as status'),
-            DB::raw('MAX(is.id) as status_id')
-        ])
-            ->join('tbl_ict_personnel as ip', 'ip.emp_id', '=', 'tbl_technicalassistance.assign_ict_officer')
-            ->join('users as u', 'u.id', '=', 'tbl_technicalassistance.request_by')
-            ->join('pmo as p', 'p.id', '=', 'tbl_technicalassistance.office_id')
-            ->join('tbl_ict_type_of_request as itr', 'itr.id', '=', 'tbl_technicalassistance.request_type_category_id')
-            ->join('tbl_ict_request_category as c', 'c.REQUEST_ID', '=', 'itr.id')
-            ->join('tbl_ict_status as is', 'is.id', '=', 'tbl_technicalassistance.status_id')
-            ->join('tbl_css_link as cl', 'cl.id', '=', 'tbl_technicalassistance.css_link')
-
-            ->orderBy('id', 'DESC')
-            ->groupBy('tbl_technicalassistance.id');
+            $ictQuery = RICTUModel::select([
+                DB::raw('MAX(tbl_technicalassistance.id) as id'),
+                DB::raw('MAX(tbl_technicalassistance.control_no) as control_no'),
+                DB::raw('MAX(u.username) as requested_by'),
+                DB::raw('MAX(tbl_technicalassistance.request_date) as requested_date'),
+                DB::raw('MAX(tbl_technicalassistance.received_date) as received_date'),
+                DB::raw('MAX(tbl_technicalassistance.completed_date) as completed_date'),
+                DB::raw('MAX(tbl_technicalassistance.remarks) as remarks'),
+                DB::raw('MAX(cl.link) as css_link'),
+                DB::raw('MAX(p.pmo_title) as office'),
+                DB::raw('MAX(itr.request_type) as request_type'),
+                DB::raw('MAX(c.TITLE) as sub_request_type'),
+                DB::raw('MAX(ip.ict_personnel) as ict_personnel'),
+                DB::raw('MAX(is.status) as status'),
+                DB::raw('MAX(is.id) as status_id')
+            ])
+                ->join('tbl_ict_personnel as ip', 'ip.emp_id', '=', 'tbl_technicalassistance.assign_ict_officer')
+                ->join('users as u', 'u.id', '=', 'tbl_technicalassistance.request_by')
+                ->join('pmo as p', 'p.id', '=', 'tbl_technicalassistance.office_id')
+                ->join('tbl_ict_type_of_request as itr', 'itr.id', '=', 'tbl_technicalassistance.request_type_id')
+                ->join('tbl_ict_request_category as c', 'c.REQUEST_ID', '=', 'itr.id')
+                ->join('tbl_ict_status as is', 'is.id', '=', 'tbl_technicalassistance.status_id')
+                ->join('tbl_css_link as cl', 'cl.id', '=', 'tbl_technicalassistance.css_link')
+                ->orderBy('id', 'DESC')
+                ->groupBy('tbl_technicalassistance.id');
         // $sql = $ictQuery->toSql();
         // echo $sql;
         // exit();
@@ -107,7 +106,7 @@ class RICTUController extends Controller
         $ict_ta_opts = RICTUModel::select([
             'tbl_technicalassistance.id',
             'tbl_technicalassistance.control_no',
-            'u.name as requested_by',
+            'u.username as requested_by',
             'tbl_technicalassistance.request_date',
             'tbl_technicalassistance.received_date',
             'tbl_technicalassistance.remarks',
@@ -120,7 +119,7 @@ class RICTUController extends Controller
             ->join('tbl_ict_personnel as ip', 'ip.emp_id', '=', 'tbl_technicalassistance.assign_ict_officer')
             ->join('users as u', 'u.id', '=', 'tbl_technicalassistance.request_by')
             ->join('pmo', 'pmo.id', '=', 'tbl_technicalassistance.office_id')
-            ->join('tbl_ict_type_of_request as itr', 'itr.id', '=', 'tbl_technicalassistance.request_type_category_id')
+            ->join('tbl_ict_type_of_request as itr', 'itr.id', '=', 'tbl_technicalassistance.request_type_id')
             ->join('tbl_ict_request_category as c', 'c.REQUEST_ID', '=', 'itr.id')
             ->join('tbl_ict_status as is', 'is.id', '=', 'tbl_technicalassistance.status_id')
             ->where('tbl_technicalassistance.id', $id)

@@ -80,9 +80,13 @@ class AbstractController extends Controller
         $itemsPerPage = $request->query('itemsPerPage', 500);
         $query = AbstractModel::select(
             'tbl_abstract.id AS id',
+            DB::raw('DATE_FORMAT(tbl_abstract.date_created, "%M %d, %Y") as abstract_date'),
             DB::raw('r.id AS rfq_id'),
             DB::raw('tbl_abstract.abstract_no AS abstract_no'),
             DB::raw('r.rfq_no AS rfq_no'),
+            DB::raw('DATE_FORMAT(r.rfq_date, "%M %d, %Y") as rfq_date'),
+            DB::raw('DATE_FORMAT(p.pr_date, "%M %d, %Y") as pr_date'),
+            DB::raw('DATE_FORMAT(po.po_date, "%M %d, %Y") as po_date'),
             DB::raw('p.pr_no AS pr_no'),
             DB::raw('po.po_no AS po_no'),
             DB::raw('po.po_amount AS po_amount'),

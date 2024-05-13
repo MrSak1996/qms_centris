@@ -18,8 +18,37 @@
 </style>
 <template>
     <nav class="sidebar sidebar-offcanvas" id="sidebar" style="background-color:rgb(38, 50, 56);">
-        <ul class="nav">
+        <ul class="nav" v-if="this.user_role == 'admin'">
             <li class="nav-item" v-for="(menuItem, index) in menuItems" :key="index">
+                <template v-if="hasChildren(menuItem)">
+                    <router-link class="nav-link " :to="menuItem.link" :data-target="'#ui-basic-' + index"
+                        :aria-controls="'ui-basic-' + index" :aria-expanded="isExpanded(index)"
+                        @click.prevent="toggleCollapse(index)">
+                        <font-awesome-icon :icon="menuItem.icon" :class="menuItem.class" />
+                        <span class="menu-title"> {{ menuItem.name }}</span>
+                        <i class="menu-arrow"></i>
+                    </router-link>
+                    <div class="collapse" :id="'ui-basic-' + index" :class="{ show: isExpanded(index) }">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item" v-for="(childItem, childIndex) in menuItem.children" :key="childIndex">
+                                <router-link class="nav-link" :to="childItem.link">
+                                    <font-awesome-icon :icon="childItem.icon" :class="menuItem.class" />
+                                    {{ childItem.name }}
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </template>
+                <template v-else>
+                    <router-link class="nav-link" :to="menuItem.link">
+                        <font-awesome-icon :icon="menuItem.icon" :class="menuItem.class" />
+                        <span class="menu-title">{{ menuItem.name }}</span>
+                    </router-link>
+                </template>
+            </li>
+        </ul>
+        <ul class="nav" v-else>
+            <li class="nav-item" v-for="(menuItem, index) in userItems" :key="index">
                 <template v-if="hasChildren(menuItem)">
                     <router-link class="nav-link " :to="menuItem.link" :data-target="'#ui-basic-' + index"
                         :aria-controls="'ui-basic-' + index" :aria-expanded="isExpanded(index)"
@@ -53,12 +82,18 @@
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCartShopping, faGauge, faList, faChartSimple, faClipboardList, faStore, faBook, faAward, faCalendar, faUsers, faAddressBook, faBoxArchive, faUserTie, faPlaneDeparture, faFileMedical, faComputer } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faGauge, faList, faChartSimple, faClipboardList, faStore, faBook, faAward, faCalendar, faUsers, faAddressBook, faBoxArchive, faUserTie, faPlaneDeparture, faFileMedical, faComputer, faGroupArrowsRotate } from '@fortawesome/free-solid-svg-icons';
+import { toast } from "vue3-toastify";
 
-library.add(faCartShopping, faGauge, faList, faChartSimple, faClipboardList, faStore, faBook, faAward, faCalendar, faUsers, faAddressBook, faBoxArchive, faUserTie, faPlaneDeparture, faFileMedical, faComputer);
+library.add(faGroupArrowsRotate, faCartShopping, faGauge, faList, faChartSimple, faClipboardList, faStore, faBook, faAward, faCalendar, faUsers, faAddressBook, faBoxArchive, faUserTie, faPlaneDeparture, faFileMedical, faComputer);
 
 export default {
     name: 'Sidebar',
+    data() {
+        return {
+            user_role: null
+        }
+    },
     props: {
         menuItems: {
             type: Array,
@@ -127,13 +162,13 @@ export default {
                     class: 'menu-icon-custom',
 
                     children: [
-                        {
-                            link: '/budget/fundsource',
-                            name: 'Fund Source',
-                            tooltip: 'Buttons',
-                            icon: 'book',
-                            class: 'menu-icon-custom',
-                        },
+                        // {
+                        //     link: '/budget/fundsource',
+                        //     name: 'Fund Source',
+                        //     tooltip: 'Buttons',
+                        //     icon: 'book',
+                        //     class: 'menu-icon-custom',
+                        // },
                         {
                             link: '/budget/obligation',
                             name: 'Obligation',
@@ -202,7 +237,7 @@ export default {
                             link: '/rictu/ict_ta/index',
                             name: 'ICT TA',
                             tooltip: 'Buttons',
-                            icon: 'computer',
+                            icon: 'group-arrows-rotate',
                         },
                         {
                             link: '/rictu/ict_ta/index',
@@ -233,6 +268,76 @@ export default {
 
             ],
         },
+        userItems: {
+            type: Array,
+            default: () => [
+                {
+                    link: '/dashboard',
+                    name: 'Dashboard',
+                    tooltip: 'Dashboard',
+                    icon: 'gauge',
+                    class: 'menu-icon-custom'
+                },
+
+
+                {
+                    link: '',
+                    name: 'Procurement',
+                    tooltip: 'General Service Section',
+                    icon: 'cart-shopping',
+                    class: 'menu-icon-custom',
+
+                    children: [
+                       
+                        {
+                            link: '/procurement/index',
+                            name: 'Procurement',
+                            tooltip: 'Buttons',
+                            icon: 'store',
+                        },
+                       
+                        {
+                            link: '/procurement/statistic',
+                            name: 'Statistics',
+                            tooltip: 'Buttons',
+                            icon: 'chart-simple',
+                        },
+                        {
+                            link: '/procurement/index',
+                            name: 'Monitoring',
+                            tooltip: 'Buttons',
+                            icon: 'clipboard-list',
+                        },
+                    ],
+
+                },
+               
+               
+                {
+                    link: '',
+                    name: 'RICTU',
+                    tooltip: 'RICTU',
+                    icon: 'computer',
+                    class: 'menu-icon-custom',
+
+                    children: [
+                        {
+                            link: '/rictu/ict_ta/index',
+                            name: 'ICT TA',
+                            tooltip: 'Buttons',
+                            icon: 'group-arrows-rotate',
+                        },
+                      
+                    
+                    ]
+                }
+
+            ],
+        },
+    },
+    created() {
+    this.user_role = localStorage.getItem('user_role');
+        console.log(this.user_role);
     },
     methods: {
         hasChildren(item) {

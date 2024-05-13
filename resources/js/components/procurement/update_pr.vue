@@ -66,13 +66,12 @@
                                                 <div class="col-lg-3 col-md-12 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="Office">Office</label>
-                                                        <select class="form-control"
-                                                            v-model="purchaseRequestData.pmo">
-                                                            <option v-for="option in pmoList" :key="option.value"
-                                                                :value="option.value">
-                                                                {{ option.label }}
+                                                        <select class="form-control" v-model="purchaseRequestData.pmo">
+                                                            <option v-for="option in pmoList" :key="option.value" :value="option.value">
+                                                              {{ option.label }}
                                                             </option>
-                                                        </select>
+                                                          </select>
+                                                          
 
                                                     </div>
                                                 </div>
@@ -205,7 +204,7 @@ export default {
                 localStorage.setItem('pr_no', res.data[0].pr_no);
 
 
-                this.purchaseRequestData.pmo = res.data[0].office;
+                this.purchaseRequestData.pmo = res.data[0].office_id;
                 this.purchaseRequestData.pr_type = res.data[0].type;
                 this.purchaseRequestData.pr_date = res.data[0].pr_date;
                 this.purchaseRequestData.target_date = res.data[0].target_date;

@@ -1,5 +1,5 @@
 <style>
-.navbar{
+.navbar {
     background-color: black;
 }
 </style>
@@ -88,7 +88,7 @@
                             <i class="ti-settings text-primary"></i>
                             Settings
                         </a>
-                        <a class="dropdown-item">
+                        <a class="dropdown-item" @click="logout">
                             <i class="ti-power-off text-primary"></i>
                             Logout
                         </a>
@@ -114,5 +114,24 @@ export default {
     components: {
 
     },
+    methods: {
+        logout() {
+            axios.post('/api/logout', null, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            })
+                .then(response => {
+                    // Clear local storage and any other cached data
+                    localStorage.removeItem('api_token');
+                    // Redirect to the login page or another appropriate page
+                    this.$router.push('/');
+                })
+                .catch(error => {
+                    console.error('Logout failed:', error);
+                });
+        }
+
+    }
 }
 </script>

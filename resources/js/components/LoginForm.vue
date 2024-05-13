@@ -45,17 +45,17 @@
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper full-page-wrapper">
             <div class="content-wrapper d-flex align-items-center auth px-0">
-                <div class="row w-100 mx-0">
+                <div class="row w-100 mx-0 justify-content-center"> <!-- Added justify-content-center -->
                     <div class="col-lg-4 mx-auto">
                         <div class="auth-form-light text-left py-5 px-12 px-sm-5">
-                            <div class="brand-logo">
+                            <div class="brand-logo text-center"> <!-- Added text-center -->
                                 <img :src="dilg_banner" alt="logo">
                             </div>
                             <h4 class="header-align-center">Finance and Administrative System</h4>
                             <h6 class="font-weight-light header-align-center">Sign in to continue.</h6>
                             <form class="pt-3" @submit.prevent="loginUser">
                                 <div class="form-group">
-                                    <input type="email" v-model="form.email" class="form-control form-control-lg"
+                                    <input type="text" v-model="form.username" class="form-control form-control-lg"
                                         id="exampleInputEmail1" placeholder="Username">
                                 </div>
                                 <div class="form-group">
@@ -67,27 +67,11 @@
                                         class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN
                                         IN</button>
                                 </div>
-                                <div class="my-2 d-flex justify-content-between align-items-center">
-                                    <div class="form-check">
-                                        <label class="form-check-label text-muted">
-                                            <input type="checkbox" class="form-check-input">
-                                            Keep me signed in
-                                        </label>
-                                    </div>
-                                    <a href="#" class="auth-link text-black">Forgot password?</a>
-                                </div>
-                                <div class="mb-2">
-                                    <button class="btn btn-block btn-facebook auth-form-btn">
-                                        <i class="ti-facebook mr-2"></i>Connect using facebook
-                                    </button>
-                                </div>
-                                <div class="text-center mt-4 font-weight-light">
-                                    Don't have an account? <a href="register.html" class="text-primary">Create</a>
-                                </div>
                             </form>
                         </div>
                     </div>
                 </div>
+                
             </div>
             <!-- content-wrapper ends -->
         </div>
@@ -100,6 +84,7 @@
 
 .auth .brand-logo img {
     width: 20% !important;
+
 
 }
 
@@ -119,7 +104,7 @@ export default {
             dilg_banner: dilg_banner,
             results: {},
             form: {
-                email: '',
+                username: '',
                 password: '',
             },
             errors: []
@@ -144,6 +129,9 @@ export default {
                     if (response.data.status) {
                         //this code is to make user id accessible globally
                         localStorage.setItem('userId', response.data.userId);
+                        localStorage.setItem('user_role', response.data.user_role);
+                        localStorage.setItem('api_token', response.data.api_token);
+
 
                         this.showSuccessNotification('You are logged in');
                         setTimeout(() => {
