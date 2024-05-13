@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     // public function login(Request $request)
     // {
     //     $request->validate([
