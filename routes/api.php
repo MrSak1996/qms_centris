@@ -34,16 +34,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->group(function () {
-    // // Protected routes here
-    // Route::get('/authenticated', function (Request $request) {
-    //     return response()->json(['authenticated' => true]);
-    // });
+    // Protected routes here
+    Route::get('/authenticated', function (Request $request) {
+        return response()->json(['authenticated' => true]);
+    });
     
     // // Other protected routes...
 });
-Route::get('/authenticated', function (Request $request) {
-    return response()->json(['authenticated' => auth()->check()]);
-});
+// Route::get('/authenticated', function (Request $request) {
+//     return response()->json(['authenticated' => auth()->check()]);
+// });
 
 
 
@@ -172,13 +172,14 @@ Route::middleware('api')->group(function () {
     Route::get('fetchUser/{userId}',[UserController::class, 'fetchUserData']);
 });
 
+Route::post('/logout', [UserController::class, 'logout']);
 
 
-Route::post('logout', function (Request $request) {
-    $request->user()->token()->revoke(); // Revoke the user's access token
-    // Clear any other cached data or session information if necessary
-    return response()->json(['message' => 'Successfully logged out']);
-})->middleware('auth:api');
+// Route::post('logout', function (Request $request) {
+//     $request->user()->token()->revoke(); // Revoke the user's access token
+//     // Clear any other cached data or session information if necessary
+//     return response()->json(['message' => 'Successfully logged out']);
+// })->middleware('auth:api');
 Route::post('login',[UserController::class,'login']);
 // Route::post('logout',[UserController::class,'logout']);
 

@@ -116,21 +116,26 @@ export default {
     },
     methods: {
         logout() {
+            const apiToken = localStorage.getItem('api_token');
+
             axios.post('/api/logout', null, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${apiToken}`
                 }
             })
-                .then(response => {
+                .then(() => {
                     // Clear local storage and any other cached data
                     localStorage.removeItem('api_token');
+
                     // Redirect to the login page or another appropriate page
+                    // For example, if using Vue Router:
                     this.$router.push('/');
                 })
                 .catch(error => {
                     console.error('Logout failed:', error);
                 });
         }
+
 
     }
 }

@@ -12,29 +12,14 @@ use App\Models\PurchaseRequestModel;
 use Laravel\Passport\HasApiTokens; // Import HasApiTokens trait
 
 
+
 use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
 {
-    use HasApiTokens, HasFactory, Notifiable;
 
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|string|email',
-    //         'password' => 'required'
-    //     ]);
-    //     $email = $request->email;
-    //     $password = $request->password;
-
-    //     if (Auth::attempt(['email' => $email, 'password' => $password,])) {
-    //         return response()->json(Auth::user(), 200);
-    //     }
-    //     throw ValidationException::withMessages([
-    //         'email' => ['Username and password are incorrect.' . $password . '' . $email]
-    //     ]);
-    // }
+ 
 
 
     public function login(Request $request)
@@ -46,11 +31,11 @@ class UserController extends Controller
           
         if ($user) {
             $token = $user->createToken('auth-token')->plainTextToken;
-            
-            // User::where('id',$user->id)
-            // ->update([
-            //     'api_token' => $token
-            // ]);
+
+            User::where('id',$user->id)
+            ->update([
+                'api_token' => $token
+            ]);
             return response()->json([
                 'status' => true,
                 'message' => 'Success',
@@ -65,29 +50,7 @@ class UserController extends Controller
             ]);
         }
     }
-    // public function login(Request $request)
-    // {
-    //     $credentials = $request->only('username', 'password');
-
-    //     if (Auth::attempt($credentials)) {
-    //         $user = Auth::user();
-    //         $tokenResult = $user->createToken('auth-token');
-    //         $token = $tokenResult->api_token;
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'Success',
-    //             'access_token' => $token,
-    //             'userId' => $user->id,
-    //         ]);
-    //     } else {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Failed',
-    //         ], 401);
-    //     }
-    // }
-
+   
     public function fetchUserData($userId)
     {
         $query = User::selectRaw('
@@ -121,7 +84,11 @@ class UserController extends Controller
 
     public function logout()
     {
-        Auth::logout();
+        $user = Auth::guard('api')->user();
+        if ($user) {
+            $user->tokens()->delete(); // Invalidate all user tokens
+        }
+
         return response()->json(['message' => 'Successfully logged out'], 200);
     }
 }

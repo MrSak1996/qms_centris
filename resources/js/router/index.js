@@ -60,25 +60,25 @@
             path: '/dashboard',
             name: 'Dashboard',
             component: DashboardComponent,
-            // meta: {
-            //     requiresAuth: true
-            // },
-            // beforeEnter: (to, from, next) => {
-            //     const token = localStorage.getItem('api_token');
-            //     axios.get('/api/authenticated',{
-            //         params:{
-            //             api_token: token
-            //         }
-            //     }).then(response => {
-            //         if (response.data.authenticated) {
-            //             next();
-            //         } else {
-            //             next({ name: 'Login' });
-            //         }
-            //     }).catch(() => {
-            //         next({ name: 'Login' });
-            //     });
-            // }
+            meta: {
+                requiresAuth: true
+            },
+            beforeEnter: (to, from, next) => {
+                const token = localStorage.getItem('api_token');
+                axios.get('/api/authenticated',{
+                    params:{
+                        api_token: token
+                    }
+                }).then(response => {
+                    if (response.data.authenticated) {
+                        next();
+                    } else {
+                        next({ name: 'Login' });
+                    }
+                }).catch(() => {
+                    next({ name: 'Login' });
+                });
+            }
 
         },
         {
