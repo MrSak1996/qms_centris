@@ -41,6 +41,7 @@ class RICTUController extends Controller
         $page = $request->query('page');
         $itemsPerPage = $request->query('itemsPerPage', 500);
 
+        
             $ictQuery = RICTUModel::select([
                 DB::raw('MAX(tbl_technicalassistance.id) as id'),
                 DB::raw('MAX(tbl_technicalassistance.control_no) as control_no'),
@@ -61,7 +62,7 @@ class RICTUController extends Controller
                 ->join('users as u', 'u.id', '=', 'tbl_technicalassistance.request_by')
                 ->join('pmo as p', 'p.id', '=', 'tbl_technicalassistance.office_id')
                 ->join('tbl_ict_type_of_request as itr', 'itr.id', '=', 'tbl_technicalassistance.request_type_id')
-                ->join('tbl_ict_request_category as c', 'c.REQUEST_ID', '=', 'itr.id')
+                ->join('tbl_ict_request_category as c', 'c.id', '=', 'tbl_technicalassistance.request_type_category_id')
                 ->join('tbl_ict_status as is', 'is.id', '=', 'tbl_technicalassistance.status_id')
                 ->join('tbl_css_link as cl', 'cl.id', '=', 'tbl_technicalassistance.css_link')
                 ->orderBy('id', 'DESC')

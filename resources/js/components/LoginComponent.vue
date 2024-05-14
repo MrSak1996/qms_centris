@@ -40,6 +40,7 @@
                             style="top:-40px !important;margin-left:265px;">
                             ONLINE PORTAL
                         </button>
+                        
                     </div>
                 </div>
             </div>
@@ -234,8 +235,10 @@
                 </div>
             </div>
         </section> -->
-
+    
+        
     </div>
+    
 </template>
 
 <style>
