@@ -153,7 +153,11 @@
                                                 <TextInput label="Type of Request" iconValue="hashtag"
                                                 v-model="data.request_type" :value="data.request_type"  disabled/>
                                         </div>
-                                        <div class="col-lg-6 mb-4">
+                                        <div class="col-lg-6 mb-4" v-if="data.req_id == 9">
+                                            <TextInput label="Request Category" iconValue="hashtag"
+                                            v-model="data.others"  :value="data.others" disabled />
+                                        </div>
+                                        <div class="col-lg-6 mb-4" v-else>
                                             <TextInput label="Request Category" iconValue="hashtag"
                                             v-model="data.sub_request_type"  :value="data.sub_request_type" disabled />
                                         </div>

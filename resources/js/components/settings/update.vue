@@ -123,8 +123,8 @@
                                             :value="data.email" :readonly="false" />
                                         <TextInput label="Username" iconValue="circle-info" v-model="data.username"
                                             :value="data.username" :readonly="false" />
-                                        <TextInput label="Password" iconValue="circle-info" v-model="data.password" value=""
-                                            :readonly="false" />
+                                        <TextInput label="Password" iconValue="circle-info" type="password" v-model="data.password" value=""
+                                            :readonly="false" style="height:40px;" /><br>
                                         <button class="btn btn-outline-primary" @click="updateUserDetails();" >Update</button>
                                     </div>
                                 </div>

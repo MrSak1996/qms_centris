@@ -89,13 +89,14 @@ img {
 
                                             <div class="col-lg-6">
                                                 <input type="hidden" v-model="ict_no" />
-                                                <TextInput label="Requested Date:" iconValue="calendar" type="date" 
-                                                    style="height: 40px !important;" v-model="requested_date" :readonly="true"
-                                                    :value="requested_date" />
+                                                <TextInput label="Requested Date:" iconValue="calendar" type="date"
+                                                    style="height: 40px !important;" v-model="requested_date"
+                                                    :readonly="true" :value="requested_date" />
                                             </div>
                                             <div class="col-lg-6">
-                                                <TextInput label="Time:" iconValue="calendar" type="text" style="height: 40px !important;"
-                                                v-model="requested_time" :readonly="true" :value="formatTime(requested_time)" />
+                                                <TextInput label="Time:" iconValue="calendar" type="text"
+                                                    style="height: 40px !important;" v-model="requested_time"
+                                                    :readonly="true" :value="formatTime(requested_time)" />
                                             </div>
                                             <div class="col-lg-12 mt-4">
                                                 <TextInput label="Requested By:" iconValue="user"
@@ -173,10 +174,12 @@ img {
                                             </div>
                                             <div class="col-lg-6 mb-4">
                                                 <div class="form-group">
-                                                    <label>NAME OF SUB REQUEST</label>
-                                                    <multiselect v-model="selectedSubRequest"
+                                                    <label v-if="!isOthersType">NAME OF SUB REQUEST</label>
+                                                    <multiselect v-if="!isOthersType" v-model="selectedSubRequest"
                                                         :options="filteredSubRequests" label="label" :multiple="false">
                                                     </multiselect>
+                                                    <label v-else>PLEASE SPECIFY</label>
+                                                    <TextInput v-else label="Please Specify" iconValue="hashtag" v-model="selectedSubRequest" />
                                                 </div>
                                             </div>
 
@@ -274,17 +277,17 @@ export default {
                 eSerial: null,
             },
             requested_date: new Date().toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                }).split('/').reverse().join('-'), 
-                requested_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit',second:'2-digit' }), // Set current time        
-                userData: {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).split('/').reverse().join('-'),
+            requested_time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), // Set current time        
+            userData: {
                 name: null,
                 pmo_title: null,
                 email: null,
                 // Set current date in dd/mm/yyyy format
-                    
+
             },
             options: [
                 { label: 'DESKTOP/LAPTOP REPAIR', value: 1 },
@@ -338,43 +341,47 @@ export default {
     computed: {
 
         filteredSubRequests() {
-            if (!this.selectedType) {
+            if (!this.selectedType || this.selectedType.value === 9) {
                 return [];
             }
             return this.sub_request.filter(item => item.type === this.selectedType.value);
-        }
+        },
+        isOthersType() {
+            return this.selectedType && this.selectedType.value === 9;
+        },
     },
 
     mounted() {
         this.generateICTControlNo();
         this.fetchEndUserInfo();
-        
+
 
     },
     methods: {
         formatDate(date) {
-        if (!date) return '';
-        const [year, month, day] = date.split('-');
-        return `${day}/${month}/${year}`;
-    },
-    formatTime(time) {
-        if (!time) return '';
-        const [hours, minutes] = time.split(':');
-        let hour = parseInt(hours);
-        if (hour >= 12) {
-            if (hour > 12) {
-                hour -= 12;
+            if (!date) return '';
+            const [year, month, day] = date.split('-');
+            return `${day}/${month}/${year}`;
+        },
+        formatTime(time) {
+            if (!time) return '';
+            const [hours, minutes] = time.split(':');
+            let hour = parseInt(hours);
+            if (hour >= 12) {
+                if (hour > 12) {
+                    hour -= 12;
+                }
             }
-        }
-        return `${hour}:${minutes}:${new Date().getSeconds()}`;
-    },
+            return `${hour}:${minutes}:${new Date().getSeconds()}`;
+        },
         showToatSuccess(message) {
             toast.success(message, {
                 autoClose: 1000,
             });
         },
         create_ict_ta() {
-            
+            const selectedRequest = (this.selectedType.value == 9) ? this.selectedSubRequest : this.selectedSubRequest.value;
+
             const userId = localStorage.getItem('userId');
             this.$fetchUserData(userId, '../../../../api/fetchUser')
                 .then(emp_data => {
@@ -389,7 +396,7 @@ export default {
                         property_no: this.hardwareInfo.pNumber,
                         equipment_sn: this.hardwareInfo.eSerial,
                         type_of_request: this.selectedType.value,
-                        subRequest: this.selectedSubRequest.value,
+                        subRequest: selectedRequest,
                         remarks: this.remarks,
                         status: 1
 
