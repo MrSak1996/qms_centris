@@ -10,6 +10,8 @@ use App\Http\Controllers\AbstractController;
 use App\Http\Controllers\HRSController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\CalendarController;
 
 
 use App\Models\AppItemModel;
@@ -63,7 +65,7 @@ Route::middleware('api')->group(function () {
 });
 
 Route::middleware('api')->group(function () {
-    Route::get('fetch_ict_request', [RICTUController::class, 'fetch_ict_request']);
+    Route::get('fetch_ict_request/{status}', [RICTUController::class, 'fetch_ict_request']);
 });
 
 Route::middleware('api')->group(function () {
@@ -172,6 +174,27 @@ Route::middleware('api')->group(function () {
     Route::get('fetchUser/{userId}',[UserController::class, 'fetchUserData']);
 });
 
+Route::middleware('api')->group(function () {
+    Route::get('getICTData/{id}',[RICTUController::class, 'getICTData']);
+});
+Route::middleware('api')->group(function () {
+    Route::get('getUserDetails/{id}',[UserController::class, 'getUserDetails']);
+});
+
+
+
+Route::middleware('api')->group(function () {
+    Route::get('getPosition',[PositionController::class, 'getPosition']);
+});
+
+Route::middleware('api')->group(function () {
+    Route::get('fetchEventData',[CalendarController::class, 'fetchEventData']);
+});
+
+Route::middleware('api')->group(function () {
+    Route::get('fetchEventDetails',[CalendarController::class, 'fetchEventDetails']);
+});
+
 Route::post('/logout', [UserController::class, 'logout']);
 
 
@@ -184,6 +207,7 @@ Route::post('login',[UserController::class,'login']);
 // Route::post('logout',[UserController::class,'logout']);
 
 
+Route::post('updateUserDetails',[UserController::class,'updateUserDetails']);
 Route::post('post_add_appItem',[AppItemController::class,'post_add_appItem']);
 Route::post('post_create_ict_request',[RICTUController::class,'post_create_ict_request']);
 Route::post('post_update_cart',[PurchaseRequestController::class,'post_update_cart']);
@@ -221,7 +245,12 @@ Route::post('getSmallestQuotationsForItems',[SupplierController::class,'getSmall
 // R F Q
 Route::post('post_create_rfq',[RFQController::class,'post_create_rfq']);
 
-//ICT TA
+//CALENDAR
+//C A L E N D A R 
+Route::post('PostEventData',[CalendarController::class,'PostEventData']);
+Route::post('PostUpdateEvent',[CalendarController::class,'PostUpdateEvent']);
+Route::post('post_create_event',[CalendarController::class,'post_create_event']);
+
 
 
 // E X P O R T

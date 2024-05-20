@@ -91,7 +91,8 @@ export default {
     name: 'Sidebar',
     data() {
         return {
-            user_role: null
+            user_role: null,
+            userId: null
         }
     },
     props: {
@@ -103,6 +104,13 @@ export default {
                     name: 'Dashboard',
                     tooltip: 'Dashboard',
                     icon: 'gauge',
+                    class: 'menu-icon-custom'
+                },
+                {
+                    link: '/calendar/index',
+                    name: 'Calendar',
+                    tooltip: 'Calendar',
+                    icon: 'calendar',
                     class: 'menu-icon-custom'
                 },
 
@@ -139,12 +147,12 @@ export default {
                             tooltip: 'Buttons',
                             icon: 'award',
                         },
-                        {
-                            link: '/procurement/statistic',
-                            name: 'Statistics',
-                            tooltip: 'Buttons',
-                            icon: 'chart-simple',
-                        },
+                        // {
+                        //     link: '/procurement/statistic',
+                        //     name: 'Statistics',
+                        //     tooltip: 'Buttons',
+                        //     icon: 'chart-simple',
+                        // },
                         {
                             link: '/procurement/index',
                             name: 'Monitoring',
@@ -179,52 +187,52 @@ export default {
 
                     ]
                 },
-                {
-                    link: '',
-                    name: 'HR Section',
-                    tooltip: 'General Service Section',
-                    icon: 'users',
-                    class: 'menu-icon-custom',
-                    children: [
-                        {
-                            link: '/human_resource/employees_directory/index',
-                            name: 'Employees Directory',
-                            tooltip: 'Buttons',
-                            icon: 'address-book',
-                        },
-                        {
-                            link: '',
-                            name: 'Daily Time Record',
-                            tooltip: 'Buttons',
-                            icon: 'clipboard-list',
-                        },
-                        {
-                            link: '',
-                            name: 'RO and ROO',
-                            tooltip: 'Buttons',
-                            icon: 'box-archive',
-                        },
-                        {
-                            link: '',
-                            name: 'Official Businees',
-                            tooltip: 'Buttons',
-                            icon: 'user-tie',
-                        },
-                        {
-                            link: '',
-                            name: 'Travel Order',
-                            tooltip: 'Buttons',
-                            icon: 'plane-departure',
-                        },
-                        {
-                            link: '',
-                            name: 'Health Monitoring',
-                            tooltip: 'Buttons',
-                            icon: 'file-medical',
-                        },
-                    ],
+                // {
+                //     link: '',
+                //     name: 'HR Section',
+                //     tooltip: 'General Service Section',
+                //     icon: 'users',
+                //     class: 'menu-icon-custom',
+                //     children: [
+                //         {
+                //             link: '/human_resource/employees_directory/index',
+                //             name: 'Employees Directory',
+                //             tooltip: 'Buttons',
+                //             icon: 'address-book',
+                //         },
+                //         {
+                //             link: '',
+                //             name: 'Daily Time Record',
+                //             tooltip: 'Buttons',
+                //             icon: 'clipboard-list',
+                //         },
+                //         {
+                //             link: '',
+                //             name: 'RO and ROO',
+                //             tooltip: 'Buttons',
+                //             icon: 'box-archive',
+                //         },
+                //         {
+                //             link: '',
+                //             name: 'Official Businees',
+                //             tooltip: 'Buttons',
+                //             icon: 'user-tie',
+                //         },
+                //         {
+                //             link: '',
+                //             name: 'Travel Order',
+                //             tooltip: 'Buttons',
+                //             icon: 'plane-departure',
+                //         },
+                //         {
+                //             link: '',
+                //             name: 'Health Monitoring',
+                //             tooltip: 'Buttons',
+                //             icon: 'file-medical',
+                //         },
+                //     ],
 
-                },
+                // },
                 {
                     link: '',
                     name: 'RICTU',
@@ -239,24 +247,24 @@ export default {
                             tooltip: 'Buttons',
                             icon: 'group-arrows-rotate',
                         },
-                        {
-                            link: '/rictu/ict_ta/index',
-                            name: 'PML Monitoring',
-                            tooltip: 'Buttons',
-                            icon: 'clipboard-list',
-                        },
-                        {
-                            link: '/rictu/ict_ta/index',
-                            name: 'PSL Monitoring',
-                            tooltip: 'Buttons',
-                            icon: 'clipboard-list',
-                        },
-                        {
-                            link: '/rictu/ict_ta/index',
-                            name: 'Inventory',
-                            tooltip: 'Buttons',
-                            icon: 'clipboard-list',
-                        },
+                        // {
+                        //     link: '/rictu/ict_ta/index',
+                        //     name: 'PML Monitoring',
+                        //     tooltip: 'Buttons',
+                        //     icon: 'clipboard-list',
+                        // },
+                        // {
+                        //     link: '/rictu/ict_ta/index',
+                        //     name: 'PSL Monitoring',
+                        //     tooltip: 'Buttons',
+                        //     icon: 'clipboard-list',
+                        // },
+                        // {
+                        //     link: '/rictu/ict_ta/index',
+                        //     name: 'Inventory',
+                        //     tooltip: 'Buttons',
+                        //     icon: 'clipboard-list',
+                        // },
                         // {
                         //     link: '/ict/reports/view',
                         //     name: 'Reports',
@@ -264,7 +272,14 @@ export default {
                         //     icon: 'list',
                         // },
                     ]
-                }
+                },
+                // {
+                //     link: '/settings/update/',
+                //     name: 'Settings',
+                //     tooltip: 'Setings',
+                //     icon: 'gear',
+                //     class: 'menu-icon-custom',
+                // }
 
             ],
         },
@@ -279,7 +294,13 @@ export default {
                     class: 'menu-icon-custom'
                 },
 
-
+                {
+                    link: '/calendar/index',
+                    name: 'Calendar',
+                    tooltip: 'Calendar',
+                    icon: 'calendar',
+                    class: 'menu-icon-custom'
+                },
                 {
                     link: '',
                     name: 'Procurement',
@@ -337,7 +358,7 @@ export default {
     },
     created() {
     this.user_role = localStorage.getItem('user_role');
-        console.log(this.user_role);
+    this.userId = localStorage.getItem('userId');
     },
     methods: {
         hasChildren(item) {

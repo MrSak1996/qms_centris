@@ -36,7 +36,7 @@
                     <div class="col-md-12 header-margin">
                         <!-- <img :src="header" class="" style="width:1200px;margin-bottom:600px;"/> -->
 
-                        <button type="button" class="btn custom-btn btn-outline-primary btn-fw btn-icon-text blinking_btn"
+                        <button type="button" class="btn custom-btn btn-outline-primary btn-fw btn-icon-text"
                             style="top:-40px !important;margin-left:265px;">
                             ONLINE PORTAL
                         </button>
