@@ -262,21 +262,15 @@ export default {
 },
 mounted() {
     this.fetchUserData();
-    setTimeout(() => {
 
-    this.checkAndShowModal();
-    }, 1000);
+   
     
 
 },
 methods: {
     checkAndShowModal() {
-
       // If the password is not updated, show the modal
-      if (this.user.isUpdatedPassword == 0) {
-        this.modalVisible = true;
-        this.showChangePasswordModal = true;
-      }
+      
     },
         closeModal() {
             this.modalVisible = false;
@@ -295,6 +289,11 @@ methods: {
       })
       .then(response => {
         this.user = response.data;
+        if (this.user.isUpdatedPassword == 0) {
+        this.modalVisible = true;
+        this.showChangePasswordModal = true;
+      }
+
       })
       .catch(error => {
         console.error('Request failed:', error);

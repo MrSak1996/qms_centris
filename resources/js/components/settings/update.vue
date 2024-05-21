@@ -194,6 +194,12 @@ export default {
                 { value: '6', label: 'ORD-RICTU' },
                 { value: '7', label: 'LGCDD' },
                 { value: '8', label: 'LGMED' },
+                { value: '10', label: 'CAVITE'},
+                { value: '11', label: 'LAGUNA'},
+                { value: '16', label: 'BATANGAS'},
+                { value: '13', label: 'RIZAL'},
+                { value: '12', label: 'QUEZON'},
+                { value: '14', label: 'LUCENA CITY'},
             ],
             gender_opts:[
                 {value: 'M', label: 'Male'},
