@@ -268,6 +268,11 @@ Route::middleware('api')->group(function () {
 });
 
 
+Route::middleware('api')->group(function () {
+    Route::get('generate-report/{sy}/{sq}/{rt}', [RICTUController::class, 'generate']);
+});
+
+
 
 
 

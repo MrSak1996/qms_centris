@@ -24,6 +24,8 @@ class RICTUModel extends Model
         'request_type_category_id',
         'request_type_id',
         'others',
+        'portal_system',
+        'website_access',
         'ict_officer_remarks',
         'remarks',
         'assign_ict_officer',

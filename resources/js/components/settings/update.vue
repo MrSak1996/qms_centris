@@ -24,7 +24,7 @@
                         <div class="col-lg-3 mt-4">
                             <div class="card">
                                 <div class="card-body">
-                                    <button class="btn btn-outline-primary col-lg-12">Account Details</button>
+                                    <button class="btn btn-outline-primary col-lg-12 active">Account Details</button>
                                     <button class="btn btn-outline-primary col-lg-12 mt-2">Profile Details</button>
                                     <button class="btn btn-outline-primary col-lg-12 mt-2">Information</button>
                                     <button class="btn btn-outline-primary col-lg-12 mt-2">Office/Position</button>

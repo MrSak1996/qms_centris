@@ -35,6 +35,7 @@ class CRUDController extends Controller
         RICTUModel::where('id', $request->input('control_no_id'))
             ->update([
                 'received_date' => DB::raw('CURRENT_TIMESTAMP'),
+                'started_date'  => DB::raw('CURRENT_TIMESTAMP'),
                 'assign_ict_officer' => $request->input('cur_user'),
                 'status_id' => self::STATUS_RECEIVED
             ]);
