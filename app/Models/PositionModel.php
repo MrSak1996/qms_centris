@@ -12,13 +12,10 @@ class PositionModel extends Model
 {
     use HasFactory;
     use HasApiTokens, Notifiable;
-    protected $table = 'tblposition';
+    protected $table = 'tbldilgposition';
 
     protected $fillable = [
-        'POSITION_C',
-        'POSITION_TITLE',
-        'POST_CAT_C',
-        'POSITION_ACRONYM',
-        'SALARY_GRADE'
+        'POSITION_ID',
+        'POSITION_M',
     ];
 }

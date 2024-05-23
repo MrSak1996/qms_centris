@@ -21,8 +21,8 @@ class PositionController extends Controller
     public function getPosition()
     {
         $query = PositionModel::selectRaw('
-        tblposition.POSITION_C,
-        tblposition.POSITION_TITLE
+        tbldilgposition.POSITION_ID,
+        tbldilgposition.POSITION_M
                     ');
         $data = $query->get();
         return response()->json($data);

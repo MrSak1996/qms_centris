@@ -140,9 +140,9 @@ export default {
             const sy = this.selected_year;
             window.location.href = `../../api/generate-report/${sy}/${sq}/${rt}?export=true`;
             this.showToatSuccess('Successfully downloaded!');
-            setTimeout(() => {
-               location.reload();
-            }, 1000); // Adjust the delay as needed
+            // setTimeout(() => {
+            //    location.reload();
+            // }, 1000); // Adjust the delay as needed
         }
 
     }

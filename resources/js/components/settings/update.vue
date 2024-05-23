@@ -233,8 +233,8 @@ export default {
         axios.get(`../../api/getPosition`)
             .then((response) => {
                 this.position = response.data.map(item => ({
-                    value: item.POSITION_C,
-                    label: item.POSITION_TITLE
+                    value: item.POSITION_ID,
+                    label: item.POSITION_M
                 }));
             }).catch(error => {
                 console.error('Error fetching positions:', error);
